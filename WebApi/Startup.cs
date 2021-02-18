@@ -24,6 +24,8 @@ namespace WebApi
 
             services.AddControllers();
 
+            services.AddCors();
+
             services.ConfigureApiVersion();
 
             services.ConfigureSwagger();
@@ -47,6 +49,8 @@ namespace WebApi
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors(builder => builder.AllowAnyOrigin());
 
             app.UseEndpoints(endpoints =>
             {
