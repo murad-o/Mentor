@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WebApi.Extensions;
+using Api.Extensions;
 
-namespace WebApi
+namespace Api
 {
     public class Startup
     {
@@ -39,7 +39,7 @@ namespace WebApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi v1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Api v1");
                     c.RoutePrefix = string.Empty;
                 });
             }
