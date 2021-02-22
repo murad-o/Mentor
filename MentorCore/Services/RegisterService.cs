@@ -18,7 +18,7 @@ namespace MentorCore.Services
             _mapper = mapper;
         }
 
-        public async Task<IdentityResult> Register(RegisterModel registerModel)
+        public async Task<IdentityResult> RegisterAsync(RegisterModel registerModel)
         {
             var user = _mapper.Map<User>(registerModel);
             var userCreated = await _userManager.CreateAsync(user, registerModel.Password);

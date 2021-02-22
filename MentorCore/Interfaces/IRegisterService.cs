@@ -6,6 +6,6 @@ namespace MentorCore.Interfaces
 {
     public interface IRegisterService
     {
-        Task<IdentityResult> Register(RegisterModel registerModel);
+        Task<IdentityResult> RegisterAsync(RegisterModel registerModel);
     }
 }
