@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
-using Entities.Data;
 using Entities.Models;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces;
