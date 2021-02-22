@@ -29,6 +29,8 @@ namespace Api
             services.ConfigureApiVersion();
 
             services.ConfigureSwagger();
+            
+            services.AddOwnServices();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
