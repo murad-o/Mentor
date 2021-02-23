@@ -4,9 +4,9 @@ using MentorCore.DTO.Account;
 
 namespace MentorCore.Services
 {
-    public class MappingProfile : Profile
+    public class AccountMappingProfile : Profile
     {
-        public MappingProfile()
+        public AccountMappingProfile()
         {
             CreateMap<RegisterModel, User>()
                 .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));

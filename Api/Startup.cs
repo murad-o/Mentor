@@ -29,7 +29,9 @@ namespace Api
             services.ConfigureApiVersion();
 
             services.ConfigureSwagger();
-            
+
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddOwnServices();
         }
 
