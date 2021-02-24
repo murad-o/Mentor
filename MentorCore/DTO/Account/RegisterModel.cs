@@ -5,6 +5,10 @@ namespace MentorCore.DTO.Account
     public record RegisterModel
     {
         [Required]
+        public string Name { get; init; }
+
+        [Required]
+        [EmailAddress]
         public string Email { get; init; }
 
         [Required]
