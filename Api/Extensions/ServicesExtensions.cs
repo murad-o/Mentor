@@ -1,5 +1,7 @@
 using Entities.Data;
 using Entities.Models;
+using MentorCore.Interfaces;
+using MentorCore.Services.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +46,11 @@ namespace Api.Extensions
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });
             });
+        }
+
+        public static void AddOwnServices(this IServiceCollection services)
+        {
+            services.AddTransient<IRegisterService, RegisterService>();
         }
     }
 }
