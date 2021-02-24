@@ -1,7 +1,7 @@
 using Entities.Data;
 using Entities.Models;
 using MentorCore.Interfaces;
-using MentorCore.Services;
+using MentorCore.Services.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

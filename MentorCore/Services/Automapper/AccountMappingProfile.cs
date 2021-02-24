@@ -2,7 +2,7 @@
 using Entities.Models;
 using MentorCore.DTO.Account;
 
-namespace MentorCore.Services
+namespace MentorCore.Services.Automapper
 {
     public class AccountMappingProfile : Profile
     {
