@@ -23,6 +23,8 @@ namespace Api
 
             services.ConfigureIdentity();
 
+            services.ConfigureRouting();
+
             services.AddControllers();
 
             services.AddCors();

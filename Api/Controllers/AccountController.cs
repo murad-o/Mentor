@@ -17,7 +17,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [Route("Register")]
+        [Route("register")]
         public async Task<ActionResult> Register(RegisterModel registerModel)
         {
             var userCreated = await _registerService.RegisterAsync(registerModel);

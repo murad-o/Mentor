@@ -25,6 +25,11 @@ namespace Api.Extensions
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
         }
 
+        public static void ConfigureRouting(this IServiceCollection services)
+        {
+            services.AddRouting(options => options.LowercaseUrls = true);
+        }
+
         public static void ConfigureApiVersion(this IServiceCollection services)
         {
             services.AddApiVersioning(options =>
