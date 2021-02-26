@@ -1,8 +1,9 @@
 using Entities.Data;
 using Entities.Models;
 using MentorCore.Interfaces;
-using MentorCore.Models;
+using MentorCore.Models.Email;
 using MentorCore.Services.Account;
+using MentorCore.Services.Email;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -86,6 +87,7 @@ namespace Api.Extensions
         public static void AddOwnServices(this IServiceCollection services)
         {
             services.AddTransient<IRegisterService, RegisterService>();
+            services.AddTransient<IEmailSender, EmailSender>();
         }
     }
 }

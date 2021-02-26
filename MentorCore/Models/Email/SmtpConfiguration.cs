@@ -1,4 +1,4 @@
-﻿namespace MentorCore.Models
+﻿namespace MentorCore.Models.Email
 {
     public class SmtpConfiguration
     {
