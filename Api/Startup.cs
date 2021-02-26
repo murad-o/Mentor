@@ -35,6 +35,10 @@ namespace Api
             
             services.AddAutoMapper(typeof(AccountMappingProfile).Assembly);
 
+            services.ConfigureSmtp(Configuration);
+
+            services.ConfigureEmail(Configuration);
+
             services.AddOwnServices();
         }
 

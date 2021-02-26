@@ -1,6 +1,7 @@
 using Entities.Data;
 using Entities.Models;
 using MentorCore.Interfaces;
+using MentorCore.Models;
 using MentorCore.Services.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -62,6 +63,24 @@ namespace Api.Extensions
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });
             });
+        }
+
+        public static void ConfigureSmtp(this IServiceCollection services, IConfiguration configuration)
+        {
+            var smtpConfig = configuration
+                .GetSection(nameof(SmtpConfiguration))
+                .Get<SmtpConfiguration>();
+
+            services.AddSingleton(smtpConfig);
+        }
+
+        public static void ConfigureEmail(this IServiceCollection services, IConfiguration configuration)
+        {
+            var emailConfig = configuration
+                .GetSection(nameof(EmailConfiguration))
+                .Get<EmailConfiguration>();
+
+            services.AddSingleton(emailConfig);
         }
 
         public static void AddOwnServices(this IServiceCollection services)
