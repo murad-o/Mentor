@@ -27,7 +27,7 @@ namespace Api
 
             services.AddControllers();
 
-            services.AddCors();
+            services.ConfigureCors();
 
             services.ConfigureApiVersion();
 
@@ -57,7 +57,7 @@ namespace Api
 
             app.UseAuthorization();
 
-            app.UseCors(builder => builder.AllowAnyOrigin());
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
