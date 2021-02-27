@@ -28,7 +28,7 @@ namespace MentorCore.Services.Account
 
             if (userCreated.Succeeded)
             {
-                var emailMessage = new EmailMessage(registerModel.Email, "Mentor", "Как ты вацок");
+                var emailMessage = new EmailMessage(registerModel.Email, "Подтверждение почты", "Как ты вацок");
                 await _emailSender.SendAsync(emailMessage);
             }
         }
