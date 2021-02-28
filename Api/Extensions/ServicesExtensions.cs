@@ -24,7 +24,10 @@ namespace Api.Extensions
 
         public static void ConfigureIdentity(this IServiceCollection services)
         {
-            services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+            services.AddIdentity<User, IdentityRole>(options =>
+                    options.SignIn.RequireConfirmedEmail = true)
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
         }
 
         public static void ConfigureRouting(this IServiceCollection services)

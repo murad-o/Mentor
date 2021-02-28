@@ -20,8 +20,19 @@ namespace Api.Controllers
         [Route("register")]
         public async Task<ActionResult> Register(RegisterModel registerModel)
         {
-            await _registerService.RegisterAsync(registerModel);
-            return Ok();
+            var userRegistered = await _registerService.RegisterAsync(registerModel);
+
+            if (userRegistered.Succeeded)
+            {
+                return Ok();
+            }
+
+            foreach (var error in userRegistered.Errors)
+            {
+                ModelState.TryAddModelError(error.Code, error.Description);
+            }
+
+            return BadRequest(ModelState);
         }
     }
 }
