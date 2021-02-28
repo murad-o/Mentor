@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using MailKit.Net.Smtp;
-using MentorCore.Interfaces;
+using MentorCore.Interfaces.Email;
 using MentorCore.Models.Email;
 using MimeKit;
 

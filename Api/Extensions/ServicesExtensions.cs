@@ -1,6 +1,7 @@
 using Entities.Data;
 using Entities.Models;
-using MentorCore.Interfaces;
+using MentorCore.Interfaces.Account;
+using MentorCore.Interfaces.Email;
 using MentorCore.Models.Email;
 using MentorCore.Services.Account;
 using MentorCore.Services.Email;

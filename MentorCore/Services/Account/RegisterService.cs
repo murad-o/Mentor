@@ -2,7 +2,8 @@
 using AutoMapper;
 using Entities.Models;
 using MentorCore.DTO.Account;
-using MentorCore.Interfaces;
+using MentorCore.Interfaces.Account;
+using MentorCore.Interfaces.Email;
 using MentorCore.Models.Email;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
