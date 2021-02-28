@@ -4,7 +4,9 @@ using Entities.Models;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces;
 using MentorCore.Models.Email;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
 
 namespace MentorCore.Services.Account
 {
@@ -13,24 +15,46 @@ namespace MentorCore.Services.Account
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly IEmailSender _emailSender;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly LinkGenerator _linkGenerator;
 
-        public RegisterService(UserManager<User> userManager, IMapper mapper, IEmailSender emailSender)
+        public RegisterService(IMapper mapper, UserManager<User> userManager, IEmailSender emailSender,
+            LinkGenerator linkGenerator, IHttpContextAccessor httpContextAccessor)
         {
-            _userManager = userManager;
             _mapper = mapper;
+            _userManager = userManager;
             _emailSender = emailSender;
+            _linkGenerator = linkGenerator;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task RegisterAsync(RegisterModel registerModel)
+        public async Task<IdentityResult> RegisterAsync(RegisterModel registerModel)
         {
             var user = _mapper.Map<User>(registerModel);
-            var userCreated = await _userManager.CreateAsync(user, registerModel.Password);
+            var userRegistered = await _userManager.CreateAsync(user, registerModel.Password);
 
-            if (userCreated.Succeeded)
+            if (userRegistered.Succeeded)
             {
-                var emailMessage = new EmailMessage(registerModel.Email, "Подтверждение почты", "Как ты вацок");
+                var emailConfirmationLink = await GenerateEmailConfirmationLink(user);
+
+                var emailMessage = new EmailMessage(registerModel.Email, "Подтверждение почты",
+                    $"Подтвердите регистрацию, перейдя по данной ссылке: {emailConfirmationLink}");
+
                 await _emailSender.SendAsync(emailMessage);
             }
+
+            return userRegistered;
+        }
+
+        private async Task<string> GenerateEmailConfirmationLink(User user)
+        {
+            var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            // Todo: Replace reference to 'Register' action method with 'ConfirmEmail' action method in email confirmation link
+            var emailConfirmationLink = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, "Register", "Account",
+                new {email = user.Email, token = emailConfirmationToken});
+
+            return emailConfirmationLink;
         }
     }
 }

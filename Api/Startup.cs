@@ -25,6 +25,8 @@ namespace Api
 
             services.ConfigureRouting();
 
+            services.AddHttpContextAccessor();
+
             services.AddControllers();
 
             services.ConfigureCors();
