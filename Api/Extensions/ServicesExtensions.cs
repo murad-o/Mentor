@@ -92,6 +92,7 @@ namespace Api.Extensions
         {
             services.AddTransient<IRegisterService, RegisterService>();
             services.AddTransient<IEmailSender, EmailSender>();
+            services.AddTransient<IEmailConfirmationService, EmailConfirmationService>();
         }
     }
 }

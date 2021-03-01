@@ -37,7 +37,6 @@ namespace MentorCore.Services.Account
             if (userRegistered.Succeeded)
             {
                 var emailConfirmationLink = await GenerateEmailConfirmationLink(user);
-
                 var emailMessage = new EmailMessage(registerModel.Email, "Подтверждение почты",
                     $"Подтвердите регистрацию, перейдя по данной ссылке: {emailConfirmationLink}");
 
@@ -51,8 +50,7 @@ namespace MentorCore.Services.Account
         {
             var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-            // Todo: Replace reference to 'Register' action method with 'ConfirmEmail' action method in email confirmation link
-            var emailConfirmationLink = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, "Register", "Account",
+            var emailConfirmationLink = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, "ConfirmEmail", "Account",
                 new {email = user.Email, token = emailConfirmationToken});
 
             return emailConfirmationLink;

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Account;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -25,14 +26,9 @@ namespace Api.Controllers
             var userRegistered = await _registerService.RegisterAsync(registerModel);
 
             if (userRegistered.Succeeded)
-            {
                 return Ok();
-            }
 
-            foreach (var error in userRegistered.Errors)
-            {
-                ModelState.TryAddModelError(error.Code, error.Description);
-            }
+            AddModelErrors(userRegistered);
 
             return BadRequest(ModelState);
         }
@@ -46,12 +42,17 @@ namespace Api.Controllers
             if (emailConfirmed.Succeeded)
                 return Ok();
 
-            foreach (var error in emailConfirmed.Errors)
+            AddModelErrors(emailConfirmed);
+
+            return BadRequest(ModelState);
+        }
+
+        private void AddModelErrors(IdentityResult identityResult)
+        {
+            foreach (var error in identityResult.Errors)
             {
                 ModelState.TryAddModelError(error.Code, error.Description);
             }
-
-            return BadRequest(ModelState);
         }
     }
 }
