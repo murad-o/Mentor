@@ -12,5 +12,14 @@ You have to add connection string for `postgres`. To do that you need to add sec
 dotnet user-secrets set "ConnectionStrings:dbConnection" "<Your connection string>"
 ```
 
+For sending mails set SMTP and Email configurations
+```
+dotnet user-secrets set "SmtpConfiguration:Server" "<Server>"
+dotnet user-secrets set "SmtpConfiguration:Port" "<Port>"
+
+dotnet user-secrets set "EmailConfiguration:UserName" "<Your UserName>"
+dotnet user-secrets set "EmailConfiguration:Password" "<Your Password>"
+```
+
 # Run
 After that apply migrations and run application

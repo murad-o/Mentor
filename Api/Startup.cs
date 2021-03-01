@@ -25,6 +25,8 @@ namespace Api
 
             services.ConfigureRouting();
 
+            services.AddHttpContextAccessor();
+
             services.AddControllers();
 
             services.ConfigureCors();
@@ -34,6 +36,10 @@ namespace Api
             services.ConfigureSwagger();
             
             services.AddAutoMapper(typeof(AccountMappingProfile).Assembly);
+
+            services.ConfigureSmtp(Configuration);
+
+            services.ConfigureEmail(Configuration);
 
             services.AddOwnServices();
         }

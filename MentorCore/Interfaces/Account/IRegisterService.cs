@@ -2,7 +2,7 @@
 using MentorCore.DTO.Account;
 using Microsoft.AspNetCore.Identity;
 
-namespace MentorCore.Interfaces
+namespace MentorCore.Interfaces.Account
 {
     public interface IRegisterService
     {

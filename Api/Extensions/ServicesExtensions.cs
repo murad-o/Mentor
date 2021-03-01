@@ -1,7 +1,10 @@
 using Entities.Data;
 using Entities.Models;
-using MentorCore.Interfaces;
+using MentorCore.Interfaces.Account;
+using MentorCore.Interfaces.Email;
+using MentorCore.Models.Email;
 using MentorCore.Services.Account;
+using MentorCore.Services.Email;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +25,10 @@ namespace Api.Extensions
 
         public static void ConfigureIdentity(this IServiceCollection services)
         {
-            services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+            services.AddIdentity<User, IdentityRole>(options =>
+                    options.SignIn.RequireConfirmedEmail = true)
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
         }
 
         public static void ConfigureRouting(this IServiceCollection services)
@@ -64,9 +70,29 @@ namespace Api.Extensions
             });
         }
 
+        public static void ConfigureSmtp(this IServiceCollection services, IConfiguration configuration)
+        {
+            var smtpConfig = configuration
+                .GetSection(nameof(SmtpConfiguration))
+                .Get<SmtpConfiguration>();
+
+            services.AddSingleton(smtpConfig);
+        }
+
+        public static void ConfigureEmail(this IServiceCollection services, IConfiguration configuration)
+        {
+            var emailConfig = configuration
+                .GetSection(nameof(EmailConfiguration))
+                .Get<EmailConfiguration>();
+
+            services.AddSingleton(emailConfig);
+        }
+
         public static void AddOwnServices(this IServiceCollection services)
         {
             services.AddTransient<IRegisterService, RegisterService>();
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.AddTransient<IEmailConfirmationService, EmailConfirmationService>();
         }
     }
 }
