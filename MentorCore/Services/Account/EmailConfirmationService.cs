@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Entities.Models;
+using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Account;
 using Microsoft.AspNetCore.Identity;
 
@@ -14,15 +16,14 @@ namespace MentorCore.Services.Account
             _userManager = userManager;
         }
 
-        public async Task<IdentityResult> ConfirmEmailAsync(string email, string token)
+        public async Task<IdentityResult> ConfirmEmailAsync(EmailConfirmationModel emailModel)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(emailModel.Email);
 
             if (user is null)
-                return IdentityResult.Failed();
+                throw new ArgumentException("User is not found");
 
-            var emailConfirmed = await _userManager.ConfirmEmailAsync(user, token);
-            return IdentityResult.Success;
+            return await _userManager.ConfirmEmailAsync(user, emailModel.Token);
         }
     }
 }

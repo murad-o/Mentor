@@ -20,7 +20,7 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        [Route("register")]
+        [Route("registration")]
         public async Task<ActionResult> Register(RegisterModel registerModel)
         {
             var userRegistered = await _registerService.RegisterAsync(registerModel);
@@ -35,9 +35,9 @@ namespace Api.Controllers
 
         [HttpGet]
         [Route("email/confirmation")]
-        public async Task<ActionResult> ConfirmEmail(string email, string token)
+        public async Task<ActionResult> ConfirmEmail([FromQuery] EmailConfirmationModel emailModel)
         {
-            var emailConfirmed = await _emailConfirmationService.ConfirmEmailAsync(email, token);
+            var emailConfirmed = await _emailConfirmationService.ConfirmEmailAsync(emailModel);
 
             if (emailConfirmed.Succeeded)
                 return Ok();
