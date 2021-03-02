@@ -15,5 +15,13 @@ namespace MentorCore.Extensions
             string dbConnection = configuration.GetConnectionString("DbConnection");
             services.AddDbContext<AppDbContext>(options => options.UseNpgsql(dbConnection));
         }
+
+        public static void ConfigureIdentity(this IServiceCollection services)
+        {
+            services.AddIdentity<User, IdentityRole>(options =>
+                    options.SignIn.RequireConfirmedEmail = true)
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+        }
     }
 }

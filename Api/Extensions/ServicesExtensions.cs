@@ -15,14 +15,6 @@ namespace Api.Extensions
 {
     public static class ServicesExtensions
     {
-        public static void ConfigureIdentity(this IServiceCollection services)
-        {
-            services.AddIdentity<User, IdentityRole>(options =>
-                    options.SignIn.RequireConfirmedEmail = true)
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
-        }
-
         public static void ConfigureRouting(this IServiceCollection services)
         {
             services.AddRouting(options => options.LowercaseUrls = true);
