@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MentorCore.Extensions
+namespace MentorCore.Configurations
 {
     public static class ServicesExtensions
     {
