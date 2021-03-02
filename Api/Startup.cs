@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Api.Extensions;
+using MentorCore.Extensions;
 using MentorCore.Services.Automapper;
 
 namespace Api

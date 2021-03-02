@@ -7,7 +7,6 @@ using MentorCore.Services.Account;
 using MentorCore.Services.Email;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -16,13 +15,6 @@ namespace Api.Extensions
 {
     public static class ServicesExtensions
     {
-        public static void ConfigureDatabase(this IServiceCollection services,
-            IConfiguration configuration)
-        {
-            string dbConnection = configuration.GetConnectionString("DbConnection");
-            services.AddDbContext<AppDbContext>(options => options.UseNpgsql(dbConnection));
-        }
-
         public static void ConfigureIdentity(this IServiceCollection services)
         {
             services.AddIdentity<User, IdentityRole>(options =>
