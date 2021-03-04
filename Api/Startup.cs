@@ -35,7 +35,7 @@ namespace Api
             services.ConfigureApiVersion();
 
             services.ConfigureSwagger();
-            
+
             services.AddAutoMapper(typeof(AccountMappingProfile).Assembly);
 
             services.ConfigureSmtp(Configuration);
