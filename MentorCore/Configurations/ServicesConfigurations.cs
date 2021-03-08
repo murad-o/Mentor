@@ -5,7 +5,6 @@ using MentorCore.Interfaces.Email;
 using MentorCore.Models.Email;
 using MentorCore.Services.Account;
 using MentorCore.Services.Email;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,10 +22,9 @@ namespace MentorCore.Configurations
 
         public static void ConfigureIdentity(this IServiceCollection services)
         {
-            services.AddIdentity<User, IdentityRole>(options =>
-                    options.SignIn.RequireConfirmedEmail = true)
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
+            services.AddIdentityCore<User>(options =>
+                options.User.RequireUniqueEmail = true)
+            .AddEntityFrameworkStores<AppDbContext>();
         }
 
         public static void ConfigureSmtp(this IServiceCollection services, IConfiguration configuration)
