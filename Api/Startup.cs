@@ -24,6 +24,8 @@ namespace Api
 
             services.ConfigureIdentity();
 
+            services.AddAuthentication();
+
             services.ConfigureRouting();
 
             services.AddHttpContextAccessor();

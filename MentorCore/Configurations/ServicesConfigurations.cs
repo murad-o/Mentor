@@ -24,8 +24,12 @@ namespace MentorCore.Configurations
         public static void ConfigureIdentity(this IServiceCollection services)
         {
             services.AddIdentityCore<User>(options =>
-                    options.User.RequireUniqueEmail = true)
-                .AddEntityFrameworkStores<AppDbContext>();
+            {
+                options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedEmail = true;
+            })
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
         }
 
         public static void ConfigureSmtp(this IServiceCollection services, IConfiguration configuration)
