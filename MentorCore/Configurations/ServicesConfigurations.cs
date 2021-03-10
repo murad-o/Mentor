@@ -52,7 +52,6 @@ namespace MentorCore.Configurations
 
         public static void AddOwnServices(this IServiceCollection services)
         {
-            services.AddTransient<IRegisterService, RegisterService>();
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<IEmailConfirmationService, EmailConfirmationService>();
         }
