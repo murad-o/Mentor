@@ -2,10 +2,8 @@
 using AutoMapper;
 using Entities.Models;
 using MentorCore.DTO.Account;
-using MentorCore.Interfaces.Account;
 using MentorCore.Interfaces.Email;
 using MentorCore.Models.Email;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,12 +16,9 @@ namespace Api.Controllers
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
-        private readonly IEmailConfirmationService _emailConfirmationService;
 
-        public AccountController(IMapper mapper, IEmailConfirmationService emailConfirmationService,
-            UserManager<User> userManager, IEmailSender emailSender)
+        public AccountController(IMapper mapper, UserManager<User> userManager, IEmailSender emailSender)
         {
-            _emailConfirmationService = emailConfirmationService;
             _mapper = mapper;
             _userManager = userManager;
             _emailSender = emailSender;
@@ -57,13 +52,17 @@ namespace Api.Controllers
         [Route("email/confirmation")]
         public async Task<ActionResult> ConfirmEmail([FromQuery] EmailConfirmationModel emailModel)
         {
-            var emailConfirmed = await _emailConfirmationService.ConfirmEmailAsync(emailModel);
+            var user = await _userManager.FindByEmailAsync(emailModel.Email);
+
+            if (user is null)
+                return NotFound("User is not found");
+
+            var emailConfirmed = await _userManager.ConfirmEmailAsync(user, emailModel.Token);
 
             if (emailConfirmed.Succeeded)
-                return Ok();
+                return Content("Your email confirmed successfully");
 
             AddModelErrors(emailConfirmed);
-
             return BadRequest(ModelState);
         }
 

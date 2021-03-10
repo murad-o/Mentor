@@ -1,9 +1,7 @@
 ﻿using Entities.Data;
 using Entities.Models;
-using MentorCore.Interfaces.Account;
 using MentorCore.Interfaces.Email;
 using MentorCore.Models.Email;
-using MentorCore.Services.Account;
 using MentorCore.Services.Email;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +51,6 @@ namespace MentorCore.Configurations
         public static void AddOwnServices(this IServiceCollection services)
         {
             services.AddTransient<IEmailSender, EmailSender>();
-            services.AddTransient<IEmailConfirmationService, EmailConfirmationService>();
         }
     }
 }
