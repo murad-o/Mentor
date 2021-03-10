@@ -1,6 +1,9 @@
 ﻿using System.Threading.Tasks;
+using AutoMapper;
+using Entities.Models;
 using MentorCore.DTO.Account;
-using MentorCore.Interfaces.Account;
+using MentorCore.Interfaces.Email;
+using MentorCore.Models.Email;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,40 +13,56 @@ namespace Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class AccountController : ControllerBase
     {
-        private readonly IRegisterService _registerService;
-        private readonly IEmailConfirmationService _emailConfirmationService;
+        private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
+        private readonly IEmailSender _emailSender;
 
-        public AccountController(IRegisterService registerService, IEmailConfirmationService emailConfirmationService)
+        public AccountController(IMapper mapper, UserManager<User> userManager, IEmailSender emailSender)
         {
-            _registerService = registerService;
-            _emailConfirmationService = emailConfirmationService;
+            _mapper = mapper;
+            _userManager = userManager;
+            _emailSender = emailSender;
         }
 
         [HttpPost]
         [Route("registration")]
         public async Task<ActionResult> Register(RegisterModel registerModel)
         {
-            var userRegistered = await _registerService.RegisterAsync(registerModel);
+            var user = _mapper.Map<User>(registerModel);
+            var userCreated = await _userManager.CreateAsync(user, registerModel.Password);
 
-            if (userRegistered.Succeeded)
-                return Ok();
+            if (!userCreated.Succeeded)
+            {
+                AddModelErrors(userCreated);
+                return BadRequest(ModelState);
+            }
 
-            AddModelErrors(userRegistered);
+            var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var emailConfirmationLink = Url.Action("ConfirmEmail", "Account",
+                new {email = user.Email, token = emailConfirmationToken}, Request.Scheme);
 
-            return BadRequest(ModelState);
+            var emailMessage = new EmailMessage(user.Email, "Подтверждение почты",
+                $"Подтвердите регистрацию, перейдя по данной ссылке: {emailConfirmationLink}");
+            await _emailSender.SendAsync(emailMessage);
+
+            return Ok();
         }
 
         [HttpGet]
         [Route("email/confirmation")]
         public async Task<ActionResult> ConfirmEmail([FromQuery] EmailConfirmationModel emailModel)
         {
-            var emailConfirmed = await _emailConfirmationService.ConfirmEmailAsync(emailModel);
+            var user = await _userManager.FindByEmailAsync(emailModel.Email);
+
+            if (user is null)
+                return NotFound("User is not found");
+
+            var emailConfirmed = await _userManager.ConfirmEmailAsync(user, emailModel.Token);
 
             if (emailConfirmed.Succeeded)
-                return Ok();
+                return Content("Your email confirmed successfully");
 
             AddModelErrors(emailConfirmed);
-
             return BadRequest(ModelState);
         }
 
