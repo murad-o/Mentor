@@ -1,5 +1,5 @@
-using Api.Configurations;
-using MentorCore.Configurations;
+using Api.Extensions;
+using MentorCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -40,9 +40,9 @@ namespace Api
 
             services.AddAutoMapper(typeof(AccountMappingProfile).Assembly);
 
-            services.ConfigureSmtp(Configuration);
+            services.GetSmtpConfigurations(Configuration);
 
-            services.ConfigureEmail(Configuration);
+            services.GetEmailConfigurations(Configuration);
 
             services.AddOwnServices();
         }

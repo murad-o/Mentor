@@ -2,13 +2,16 @@
 using Entities.Models;
 using MentorCore.Interfaces.Email;
 using MentorCore.Models.Email;
+using MentorCore.Models.JWT;
 using MentorCore.Services.Email;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
-namespace MentorCore.Configurations
+namespace MentorCore.Extensions
 {
     public static class ServicesExtensions
     {
@@ -30,7 +33,26 @@ namespace MentorCore.Configurations
             .AddDefaultTokenProviders();
         }
 
-        public static void ConfigureSmtp(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureJwt(this IServiceCollection services)
+        {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true
+                };
+            });
+        }
+
+        public static void GetSmtpConfigurations(this IServiceCollection services, IConfiguration configuration)
         {
             var smtpConfig = configuration
                 .GetSection(nameof(SmtpConfiguration))
@@ -39,7 +61,7 @@ namespace MentorCore.Configurations
             services.AddSingleton(smtpConfig);
         }
 
-        public static void ConfigureEmail(this IServiceCollection services, IConfiguration configuration)
+        public static void GetEmailConfigurations(this IServiceCollection services, IConfiguration configuration)
         {
             var emailConfig = configuration
                 .GetSection(nameof(EmailConfiguration))
@@ -51,6 +73,11 @@ namespace MentorCore.Configurations
         public static void AddOwnServices(this IServiceCollection services)
         {
             services.AddTransient<IEmailSender, EmailSender>();
+        }
+
+        public static JwtConfiguration GetJwtConfigurations(IConfiguration configuration)
+        {
+            return configuration.GetSection(nameof(JwtConfiguration)).Get<JwtConfiguration>();
         }
     }
 }
