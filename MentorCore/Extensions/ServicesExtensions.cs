@@ -74,10 +74,5 @@ namespace MentorCore.Extensions
         {
             services.AddTransient<IEmailSender, EmailSender>();
         }
-
-        public static JwtConfiguration GetJwtConfigurations(IConfiguration configuration)
-        {
-            return configuration.GetSection(nameof(JwtConfiguration)).Get<JwtConfiguration>();
-        }
     }
 }
