@@ -24,7 +24,7 @@ namespace Api
 
             services.ConfigureIdentity();
 
-            services.AddAuthentication();
+            services.ConfigureJwt(Configuration);
 
             services.ConfigureRouting();
 
@@ -64,6 +64,7 @@ namespace Api
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseCors("CorsPolicy");

@@ -1,8 +1,8 @@
-﻿using Entities.Data;
+﻿using System.Text;
+using Entities.Data;
 using Entities.Models;
 using MentorCore.Interfaces.Email;
 using MentorCore.Models.Email;
-using MentorCore.Models.JWT;
 using MentorCore.Services.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -33,8 +33,10 @@ namespace MentorCore.Extensions
             .AddDefaultTokenProviders();
         }
 
-        public static void ConfigureJwt(this IServiceCollection services)
+        public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
         {
+            var jwtConfigurations = configuration.GetJwtConfigurations();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -47,7 +49,11 @@ namespace MentorCore.Extensions
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = jwtConfigurations.ValidIssuer,
+                    ValidAudience = jwtConfigurations.ValidAudience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigurations.SecretKey))
                 };
             });
         }
