@@ -2,8 +2,10 @@
 using Entities.Data;
 using Entities.Models;
 using MentorCore.Interfaces.Email;
+using MentorCore.Interfaces.Jwt;
 using MentorCore.Models.Email;
 using MentorCore.Services.Email;
+using MentorCore.Services.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -57,6 +59,11 @@ namespace MentorCore.Extensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigurations.SecretKey))
                 };
             });
+        }
+
+        public static void RegisterJwtGenerator(this IServiceCollection services)
+        {
+            services.AddTransient<IJwtGenerator, JwtGenerator>();
         }
 
         public static void GetSmtpConfigurations(this IServiceCollection services, IConfiguration configuration)

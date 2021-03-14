@@ -26,6 +26,8 @@ namespace Api
 
             services.ConfigureJwt(Configuration);
 
+            services.RegisterJwtGenerator();
+
             services.ConfigureRouting();
 
             services.AddHttpContextAccessor();
