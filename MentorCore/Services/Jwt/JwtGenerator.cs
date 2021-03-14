@@ -3,34 +3,31 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using MentorCore.Extensions;
 using MentorCore.Interfaces.Jwt;
-using Microsoft.Extensions.Configuration;
+using MentorCore.Models.JWT;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MentorCore.Services.Jwt
 {
     public class JwtGenerator : IJwtGenerator
     {
-        private readonly IConfiguration _configuration;
+        private readonly JwtConfiguration _jwtConfiguration;
 
-        public JwtGenerator(IConfiguration configuration)
+        public JwtGenerator(JwtConfiguration jwtConfiguration)
         {
-            _configuration = configuration;
+            _jwtConfiguration = jwtConfiguration;
         }
 
         public string CreateToken()
         {
-            var jwtConfigurations = _configuration.GetJwtConfigurations();
-            
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigurations.SecretKey));
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.SecretKey));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-            
+
             var tokenOptions = new JwtSecurityToken(
-                issuer: jwtConfigurations.ValidIssuer,
-                audience: jwtConfigurations.ValidAudience,
+                issuer: _jwtConfiguration.ValidIssuer,
+                audience: _jwtConfiguration.ValidAudience,
                 claims: new List<Claim>(),
-                expires: DateTime.Now.AddMinutes(jwtConfigurations.LifeTime),
+                expires: DateTime.Now.AddMinutes(_jwtConfiguration.LifeTime),
                 signingCredentials: signinCredentials
             );
    

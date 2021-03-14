@@ -4,6 +4,7 @@ using Entities.Models;
 using MentorCore.Interfaces.Email;
 using MentorCore.Interfaces.Jwt;
 using MentorCore.Models.Email;
+using MentorCore.Models.JWT;
 using MentorCore.Services.Email;
 using MentorCore.Services.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -63,7 +64,7 @@ namespace MentorCore.Extensions
 
         public static void RegisterJwtGenerator(this IServiceCollection services)
         {
-            services.AddTransient<IJwtGenerator, JwtGenerator>();
+            services.AddSingleton<IJwtGenerator, JwtGenerator>();
         }
 
         public static void GetSmtpConfigurations(this IServiceCollection services, IConfiguration configuration)
@@ -82,6 +83,13 @@ namespace MentorCore.Extensions
                 .Get<EmailConfiguration>();
 
             services.AddSingleton(emailConfig);
+        }
+
+        public static void GetJwtConfigurations(this IServiceCollection services, IConfiguration configuration)
+        {
+            var jwtConfig = configuration.GetJwtConfigurations();
+
+            services.AddSingleton(typeof(JwtConfiguration), jwtConfig);
         }
 
         public static void AddOwnServices(this IServiceCollection services)

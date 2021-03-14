@@ -46,6 +46,8 @@ namespace Api
 
             services.GetEmailConfigurations(Configuration);
 
+            services.GetJwtConfigurations(Configuration);
+
             services.AddOwnServices();
         }
 
