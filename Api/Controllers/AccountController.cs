@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
 using Entities.Models;
 using MentorCore.DTO.Account;
-using MentorCore.Extensions;
 using MentorCore.Interfaces.Email;
+using MentorCore.Interfaces.Jwt;
 using MentorCore.Models.Email;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Controllers
 {
@@ -25,16 +18,16 @@ namespace Api.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly IConfiguration _configuration;
+        private readonly IJwtGenerator _jwtGenerator;
 
         public AccountController(IMapper mapper, UserManager<User> userManager,
-            IEmailSender emailSender, SignInManager<User> signInManager, IConfiguration configuration)
+            IEmailSender emailSender, SignInManager<User> signInManager, IJwtGenerator jwtGenerator)
         {
             _mapper = mapper;
             _userManager = userManager;
             _emailSender = emailSender;
             _signInManager = signInManager;
-            _configuration = configuration;
+            _jwtGenerator = jwtGenerator;
         }
 
         [HttpPost]
@@ -83,27 +76,24 @@ namespace Api.Controllers
         [Route("login")]
         public async Task<IActionResult> Login(LoginModel loginModel)
         {
-            var user = _mapper.Map<User>(loginModel);
+            var user = await _userManager.FindByEmailAsync(loginModel.Email);
+
+            if (user is null)
+            {
+                ModelState.TryAddModelError("IncorrectCredentials", "Incorrect UserName or Password");
+                return BadRequest(ModelState);
+            }
+
             var authorized = await _signInManager.CheckPasswordSignInAsync(user, loginModel.Password, false);
 
             if (!authorized.Succeeded)
-                return Unauthorized();
+            {
+                ModelState.TryAddModelError("IncorrectCredentials", "Incorrect UserName or Password");
+                return BadRequest(ModelState);
+            }
 
-            var jwtConfigurations = _configuration.GetJwtConfigurations();
-
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigurations.SecretKey));
-            var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-
-            var tokenOptions = new JwtSecurityToken(
-                issuer: jwtConfigurations.ValidIssuer,
-                audience: jwtConfigurations.ValidAudience,
-                claims: new List<Claim>(),
-                expires: DateTime.Now.AddMinutes(jwtConfigurations.LifeTime),
-                signingCredentials: signinCredentials
-            );
-
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-            return Ok(new {token});
+            var token = _jwtGenerator.CreateToken();
+            return Ok(new { token });
         }
 
         private void AddModelErrors(IdentityResult identityResult)
