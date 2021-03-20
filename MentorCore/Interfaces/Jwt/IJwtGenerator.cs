@@ -1,7 +1,10 @@
-﻿namespace MentorCore.Interfaces.Jwt
+﻿using System.Collections.Generic;
+using System.Security.Claims;
+
+namespace MentorCore.Interfaces.Jwt
 {
     public interface IJwtGenerator
     {
-        string CreateAccessToken();
+        string GenerateAccessToken(IEnumerable<Claim> claims);
     }
 }

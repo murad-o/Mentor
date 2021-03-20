@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using AutoMapper;
 using Entities.Models;
 using MentorCore.DTO.Account;
@@ -92,7 +95,15 @@ namespace Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var token = _jwtGenerator.CreateAccessToken();
+            var roles = await _userManager.GetRolesAsync(user);
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.Name, loginModel.Email)
+            };
+
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+            var token = _jwtGenerator.GenerateAccessToken(claims);
             return Ok(new { token });
         }
 

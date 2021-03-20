@@ -18,15 +18,15 @@ namespace MentorCore.Services.Jwt
             _jwtConfiguration = jwtConfiguration;
         }
 
-        public string CreateAccessToken()
+        public string GenerateAccessToken(IEnumerable<Claim> claims)
         {
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.SecretKey));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
             var tokenOptions = new JwtSecurityToken(
-                issuer: _jwtConfiguration.ValidIssuer,
-                audience: _jwtConfiguration.ValidAudience,
-                claims: new List<Claim>(),
+                _jwtConfiguration.ValidIssuer,
+                _jwtConfiguration.ValidAudience,
+                claims,
                 expires: DateTime.Now.AddMinutes(_jwtConfiguration.LifeTime),
                 signingCredentials: signinCredentials
             );
