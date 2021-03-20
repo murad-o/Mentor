@@ -92,7 +92,7 @@ namespace Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var token = _jwtGenerator.CreateToken();
+            var token = _jwtGenerator.CreateAccessToken();
             return Ok(new { token });
         }
 

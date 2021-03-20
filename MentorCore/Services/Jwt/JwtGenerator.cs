@@ -18,7 +18,7 @@ namespace MentorCore.Services.Jwt
             _jwtConfiguration = jwtConfiguration;
         }
 
-        public string CreateToken()
+        public string CreateAccessToken()
         {
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.SecretKey));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);

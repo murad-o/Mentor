@@ -2,6 +2,6 @@
 {
     public interface IJwtGenerator
     {
-        string CreateToken();
+        string CreateAccessToken();
     }
 }
