@@ -60,6 +60,8 @@ namespace MentorCore.Extensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigurations.SecretKey))
                 };
             });
+
+            services.AddSingleton(typeof(JwtConfiguration), jwtConfigurations);
         }
 
         public static void RegisterJwtGenerator(this IServiceCollection services)
@@ -67,7 +69,7 @@ namespace MentorCore.Extensions
             services.AddSingleton<IJwtGenerator, JwtGenerator>();
         }
 
-        public static void GetSmtpConfigurations(this IServiceCollection services, IConfiguration configuration)
+        public static void RegisterSmtpConfigurations(this IServiceCollection services, IConfiguration configuration)
         {
             var smtpConfig = configuration
                 .GetSection(nameof(SmtpConfiguration))
@@ -76,7 +78,7 @@ namespace MentorCore.Extensions
             services.AddSingleton(smtpConfig);
         }
 
-        public static void GetEmailConfigurations(this IServiceCollection services, IConfiguration configuration)
+        public static void RegisterEmailConfigurations(this IServiceCollection services, IConfiguration configuration)
         {
             var emailConfig = configuration
                 .GetSection(nameof(EmailConfiguration))
@@ -85,14 +87,7 @@ namespace MentorCore.Extensions
             services.AddSingleton(emailConfig);
         }
 
-        public static void GetJwtConfigurations(this IServiceCollection services, IConfiguration configuration)
-        {
-            var jwtConfig = configuration.GetJwtConfigurations();
-
-            services.AddSingleton(typeof(JwtConfiguration), jwtConfig);
-        }
-
-        public static void AddOwnServices(this IServiceCollection services)
+        public static void RegisterEmailSender(this IServiceCollection services)
         {
             services.AddTransient<IEmailSender, EmailSender>();
         }

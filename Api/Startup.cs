@@ -42,13 +42,11 @@ namespace Api
 
             services.AddAutoMapper(typeof(AccountMappingProfile).Assembly);
 
-            services.GetSmtpConfigurations(Configuration);
+            services.RegisterSmtpConfigurations(Configuration);
 
-            services.GetEmailConfigurations(Configuration);
+            services.RegisterEmailConfigurations(Configuration);
 
-            services.GetJwtConfigurations(Configuration);
-
-            services.AddOwnServices();
+            services.RegisterEmailSender();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
