@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using MentorCore.Interfaces.Jwt;
 using MentorCore.Models.JWT;
@@ -32,6 +33,15 @@ namespace MentorCore.Services.Jwt
             );
    
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+
+            return Convert.ToBase64String(randomNumber);
         }
     }
 }

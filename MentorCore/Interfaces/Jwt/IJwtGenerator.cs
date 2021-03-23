@@ -6,5 +6,6 @@ namespace MentorCore.Interfaces.Jwt
     public interface IJwtGenerator
     {
         string GenerateAccessToken(IEnumerable<Claim> claims);
+        string GenerateRefreshToken();
     }
 }
