@@ -9,10 +9,8 @@ namespace Entities.Models
         [Required]
         public string Name { get; set; }
 
-        [Required]
         public string RefreshToken { get; set; }
 
-        [Required]
         public DateTime RefreshTokenExpiryTime { get; set; }
     }
 }
