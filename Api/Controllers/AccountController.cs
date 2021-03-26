@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using Entities.Data;
 using Entities.Models;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Email;
@@ -22,15 +24,18 @@ namespace Api.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly IJwtGenerator _jwtGenerator;
+        private readonly AppDbContext _context;
 
         public AccountController(IMapper mapper, UserManager<User> userManager,
-            IEmailSender emailSender, SignInManager<User> signInManager, IJwtGenerator jwtGenerator)
+            IEmailSender emailSender, SignInManager<User> signInManager,
+            IJwtGenerator jwtGenerator, AppDbContext context)
         {
             _mapper = mapper;
             _userManager = userManager;
             _emailSender = emailSender;
             _signInManager = signInManager;
             _jwtGenerator = jwtGenerator;
+            _context = context;
         }
 
         [HttpPost]
@@ -103,8 +108,14 @@ namespace Api.Controllers
 
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            var token = _jwtGenerator.GenerateAccessToken(claims);
-            return Ok(new { token });
+            var accessToken = _jwtGenerator.GenerateAccessToken(claims);
+            var refreshToken = _jwtGenerator.GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+            await _context.SaveChangesAsync();
+
+            return Ok(new {accessToken, refreshToken});
         }
 
         private void AddModelErrors(IdentityResult identityResult)
