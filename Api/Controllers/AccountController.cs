@@ -23,18 +23,18 @@ namespace Api.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly IJwtGenerator _jwtGenerator;
+        private readonly IJwtTokenService _jwtTokenService;
         private readonly AppDbContext _context;
 
         public AccountController(IMapper mapper, UserManager<User> userManager,
             IEmailSender emailSender, SignInManager<User> signInManager,
-            IJwtGenerator jwtGenerator, AppDbContext context)
+            IJwtTokenService jwtTokenService, AppDbContext context)
         {
             _mapper = mapper;
             _userManager = userManager;
             _emailSender = emailSender;
             _signInManager = signInManager;
-            _jwtGenerator = jwtGenerator;
+            _jwtTokenService = jwtTokenService;
             _context = context;
         }
 
@@ -108,8 +108,8 @@ namespace Api.Controllers
 
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            var accessToken = _jwtGenerator.GenerateAccessToken(claims);
-            var refreshToken = _jwtGenerator.GenerateRefreshToken();
+            var accessToken = _jwtTokenService.GenerateAccessToken(claims);
+            var refreshToken = _jwtTokenService.GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
