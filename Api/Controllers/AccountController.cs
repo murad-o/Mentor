@@ -118,6 +118,28 @@ namespace Api.Controllers
             return Ok(new {accessToken, refreshToken});
         }
 
+        [HttpPost]
+        [Route("refresh")]
+        public async Task<IActionResult> Refresh(JwtTokenModel jwtTokenModel)
+        {
+            var principal = _jwtTokenService.GetPrincipalFromExpiredToken(jwtTokenModel.AccessToken);
+
+            var username = principal.Identity?.Name;
+            var user = await _userManager.FindByEmailAsync(username);
+
+            if (user is null || user.RefreshToken != jwtTokenModel.RefreshToken ||
+                user.RefreshTokenExpiryTime <= DateTime.Now)
+                return BadRequest("Invalid client request");
+
+            var newAccessToken = _jwtTokenService.GenerateAccessToken(principal.Claims);
+            var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { newAccessToken, newRefreshToken });
+        }
+
         private void AddModelErrors(IdentityResult identityResult)
         {
             foreach (var error in identityResult.Errors)

@@ -53,7 +53,8 @@ namespace MentorCore.Services.Jwt
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
 
-                // Todo: Add ValidAudience and ValidIssuer
+                ValidIssuer = _jwtConfigurations.ValidIssuer,
+                ValidAudience = _jwtConfigurations.ValidAudience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfigurations.SecretKey))
             };
 

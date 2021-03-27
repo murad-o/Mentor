@@ -1,6 +1,6 @@
 ﻿namespace MentorCore.DTO.Account
 {
-    public record JwtTokenService
+    public record JwtTokenModel
     {
         public string AccessToken { get; init; }
         public string RefreshToken { get; init; }
