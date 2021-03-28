@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Email;
 using MentorCore.Interfaces.Jwt;
 using MentorCore.Models.Email;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -137,7 +139,23 @@ namespace Api.Controllers
             user.RefreshToken = newRefreshToken;
             await _context.SaveChangesAsync();
 
-            return Ok(new { newAccessToken, newRefreshToken });
+            return Ok(new { accessToken = newAccessToken, refreshToken = newRefreshToken });
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("revoke")]
+        public async Task<IActionResult> Revoke([Required, FromBody] string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user is null)
+                return BadRequest();
+
+            user.RefreshToken = null;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         private void AddModelErrors(IdentityResult identityResult)
