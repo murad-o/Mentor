@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
-using Entities.Data;
 using Entities.Models;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Email;
@@ -27,19 +25,20 @@ namespace Api.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly IJwtExpiredTokenService _jwtExpiredTokenService;
-        private readonly AppDbContext _context;
+        private readonly IJwtRefreshTokenService _jwtRefreshTokenService;
 
         public AccountController(IMapper mapper, UserManager<User> userManager,
             IEmailSender emailSender, SignInManager<User> signInManager,
-            IJwtTokenGenerator jwtTokenGenerator, AppDbContext context, IJwtExpiredTokenService jwtExpiredTokenService)
+            IJwtTokenGenerator jwtTokenGenerator, IJwtExpiredTokenService jwtExpiredTokenService,
+            IJwtRefreshTokenService jwtRefreshTokenService)
         {
             _mapper = mapper;
             _userManager = userManager;
             _emailSender = emailSender;
             _signInManager = signInManager;
             _jwtTokenGenerator = jwtTokenGenerator;
-            _context = context;
             _jwtExpiredTokenService = jwtExpiredTokenService;
+            _jwtRefreshTokenService = jwtRefreshTokenService;
         }
 
         [HttpPost]
@@ -113,11 +112,7 @@ namespace Api.Controllers
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var accessToken = _jwtTokenGenerator.GenerateAccessToken(claims);
-            var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
-
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
-            await _context.SaveChangesAsync();
+            var refreshToken = await _jwtRefreshTokenService.CreateRefreshAndExpiryTokenAsync(user);
 
             return Ok(new {accessToken, refreshToken});
         }
@@ -136,10 +131,7 @@ namespace Api.Controllers
                 return BadRequest("Invalid client request");
 
             var newAccessToken = _jwtTokenGenerator.GenerateAccessToken(principal.Claims);
-            var newRefreshToken = _jwtTokenGenerator.GenerateRefreshToken();
-
-            user.RefreshToken = newRefreshToken;
-            await _context.SaveChangesAsync();
+            var newRefreshToken = await _jwtRefreshTokenService.UpdateRefreshTokenAsync(user);
 
             return Ok(new { accessToken = newAccessToken, refreshToken = newRefreshToken });
         }
@@ -156,8 +148,7 @@ namespace Api.Controllers
             if (user is null)
                 return BadRequest();
 
-            user.RefreshToken = null;
-            await _context.SaveChangesAsync();
+            await _jwtRefreshTokenService.RevokeRefreshTokenAsync(user);
 
             return NoContent();
         }
