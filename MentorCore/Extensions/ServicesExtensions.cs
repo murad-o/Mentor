@@ -65,9 +65,10 @@ namespace MentorCore.Extensions
             services.AddSingleton(typeof(JwtConfiguration), jwtConfigurations);
         }
 
-        public static void RegisterJwtGenerator(this IServiceCollection services)
+        public static void RegisterJwtServices(this IServiceCollection services)
         {
-            services.AddSingleton<IJwtTokenService, JwtTokenService>();
+            services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+            services.AddSingleton<IJwtExpiredTokenService, JwtExpiredTokenService>();
         }
 
         public static void RegisterSmtpConfigurations(this IServiceCollection services, IConfiguration configuration)

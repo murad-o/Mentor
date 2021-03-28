@@ -3,10 +3,9 @@ using System.Security.Claims;
 
 namespace MentorCore.Interfaces.Jwt
 {
-    public interface IJwtTokenService
+    public interface IJwtTokenGenerator
     {
         string GenerateAccessToken(IEnumerable<Claim> claims);
         string GenerateRefreshToken();
-        ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
     }
 }

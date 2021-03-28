@@ -25,19 +25,21 @@ namespace Api.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly IJwtTokenService _jwtTokenService;
+        private readonly IJwtTokenGenerator _jwtTokenGenerator;
+        private readonly IJwtExpiredTokenService _jwtExpiredTokenService;
         private readonly AppDbContext _context;
 
         public AccountController(IMapper mapper, UserManager<User> userManager,
             IEmailSender emailSender, SignInManager<User> signInManager,
-            IJwtTokenService jwtTokenService, AppDbContext context)
+            IJwtTokenGenerator jwtTokenGenerator, AppDbContext context, IJwtExpiredTokenService jwtExpiredTokenService)
         {
             _mapper = mapper;
             _userManager = userManager;
             _emailSender = emailSender;
             _signInManager = signInManager;
-            _jwtTokenService = jwtTokenService;
+            _jwtTokenGenerator = jwtTokenGenerator;
             _context = context;
+            _jwtExpiredTokenService = jwtExpiredTokenService;
         }
 
         [HttpPost]
@@ -110,8 +112,8 @@ namespace Api.Controllers
 
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            var accessToken = _jwtTokenService.GenerateAccessToken(claims);
-            var refreshToken = _jwtTokenService.GenerateRefreshToken();
+            var accessToken = _jwtTokenGenerator.GenerateAccessToken(claims);
+            var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
@@ -122,9 +124,9 @@ namespace Api.Controllers
 
         [HttpPost]
         [Route("refresh")]
-        public async Task<IActionResult> Refresh(JwtTokenModel jwtTokenModel)
+        public async Task<IActionResult> RefreshJwtToken(JwtTokenModel jwtTokenModel)
         {
-            var principal = _jwtTokenService.GetPrincipalFromExpiredToken(jwtTokenModel.AccessToken);
+            var principal = _jwtExpiredTokenService.GetPrincipalFromExpiredToken(jwtTokenModel.AccessToken);
 
             var username = principal.Identity?.Name;
             var user = await _userManager.FindByEmailAsync(username);
@@ -133,8 +135,8 @@ namespace Api.Controllers
                 user.RefreshTokenExpiryTime <= DateTime.Now)
                 return BadRequest("Invalid client request");
 
-            var newAccessToken = _jwtTokenService.GenerateAccessToken(principal.Claims);
-            var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
+            var newAccessToken = _jwtTokenGenerator.GenerateAccessToken(principal.Claims);
+            var newRefreshToken = _jwtTokenGenerator.GenerateRefreshToken();
 
             user.RefreshToken = newRefreshToken;
             await _context.SaveChangesAsync();
@@ -145,9 +147,11 @@ namespace Api.Controllers
         [HttpPost]
         [Authorize]
         [Route("revoke")]
-        public async Task<IActionResult> Revoke([Required, FromBody] string email)
+        public async Task<IActionResult> RevokeJwtToken()
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var username = User.Identity?.Name;
+
+            var user = await _userManager.FindByEmailAsync(username);
 
             if (user is null)
                 return BadRequest();

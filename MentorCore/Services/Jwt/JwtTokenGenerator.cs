@@ -10,11 +10,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace MentorCore.Services.Jwt
 {
-    public class JwtTokenService : IJwtTokenService
+    public class JwtTokenGenerator : IJwtTokenGenerator
     {
         private readonly JwtConfiguration _jwtConfigurations;
 
-        public JwtTokenService(JwtConfiguration jwtConfigurations)
+        public JwtTokenGenerator(JwtConfiguration jwtConfigurations)
         {
             _jwtConfigurations = jwtConfigurations;
         }
@@ -42,30 +42,6 @@ namespace MentorCore.Services.Jwt
             rng.GetBytes(randomNumber);
 
             return Convert.ToBase64String(randomNumber);
-        }
-
-        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
-        {
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-
-                ValidIssuer = _jwtConfigurations.ValidIssuer,
-                ValidAudience = _jwtConfigurations.ValidAudience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfigurations.SecretKey))
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
-
-            if (!(securityToken is JwtSecurityToken jwtSecurityToken) || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
-                StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Invalid token");
-
-            return principal;
         }
     }
 }
