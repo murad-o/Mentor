@@ -117,9 +117,9 @@ namespace Api.Controllers
             return Ok(new {accessToken, refreshToken});
         }
 
-        [HttpPost]
-        [Route("refresh")]
-        public async Task<IActionResult> RefreshJwtToken(JwtTokenModel jwtTokenModel)
+        [HttpPut]
+        [Route("token")]
+        public async Task<IActionResult> RefreshToken(JwtTokenModel jwtTokenModel)
         {
             var principal = _jwtExpiredTokenService.GetPrincipalFromExpiredToken(jwtTokenModel.AccessToken);
 
@@ -136,10 +136,10 @@ namespace Api.Controllers
             return Ok(new { accessToken = newAccessToken, refreshToken = newRefreshToken });
         }
 
-        [HttpPost]
+        [HttpDelete]
         [Authorize]
-        [Route("revoke")]
-        public async Task<IActionResult> RevokeJwtToken()
+        [Route("token")]
+        public async Task<IActionResult> RevokeRefreshToken()
         {
             var username = User.Identity?.Name;
 
