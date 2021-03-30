@@ -1,35 +1,23 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using MentorCore.Interfaces.Jwt;
-using MentorCore.Models.JWT;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MentorCore.Services.Jwt
 {
     public class JwtExpiredTokenService : IJwtExpiredTokenService
     {
-        private readonly JwtConfiguration _jwtConfigurations;
+        private readonly TokenValidation _tokenValidation;
 
-        public JwtExpiredTokenService(JwtConfiguration jwtConfigurations)
+        public JwtExpiredTokenService(TokenValidation tokenValidation)
         {
-            _jwtConfigurations = jwtConfigurations;
+            _tokenValidation = tokenValidation;
         }
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string expiredToken)
         {
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-
-                ValidIssuer = _jwtConfigurations.ValidIssuer,
-                ValidAudience = _jwtConfigurations.ValidAudience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfigurations.SecretKey))
-            };
+            var tokenValidationParameters = _tokenValidation.CreateTokenValidationParameters();
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var principal = tokenHandler.ValidateToken(expiredToken, tokenValidationParameters, out var securityToken);

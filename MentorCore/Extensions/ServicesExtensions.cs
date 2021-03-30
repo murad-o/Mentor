@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Entities.Data;
+﻿using Entities.Data;
 using Entities.Models;
 using MentorCore.Interfaces.Email;
 using MentorCore.Interfaces.Jwt;
@@ -12,7 +11,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 
 namespace MentorCore.Extensions
 {
@@ -40,7 +38,7 @@ namespace MentorCore.Extensions
 
         public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
         {
-            var jwtConfigurations = configuration.GetJwtConfigurations();
+            var jwtConfigs = configuration.GetJwtConfigurations();
 
             services.AddAuthentication(options =>
             {
@@ -49,24 +47,15 @@ namespace MentorCore.Extensions
             })
             .AddJwtBearer(options =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-
-                    ValidIssuer = jwtConfigurations.ValidIssuer,
-                    ValidAudience = jwtConfigurations.ValidAudience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigurations.SecretKey))
-                };
+                options.TokenValidationParameters = new TokenValidation(jwtConfigs).CreateTokenValidationParameters();
             });
 
-            services.AddSingleton(typeof(JwtConfiguration), jwtConfigurations);
+            services.AddSingleton(typeof(JwtConfiguration), jwtConfigs);
         }
 
         public static void RegisterJwtServices(this IServiceCollection services)
         {
+            services.AddSingleton<TokenValidation>();
             services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddSingleton<IJwtExpiredTokenService, JwtExpiredTokenService>();
             services.AddScoped<IJwtRefreshTokenService, JwtRefreshTokenService>();
