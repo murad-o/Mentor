@@ -15,6 +15,9 @@ namespace Entities.Models
         public DateTime ExpireTime { get; set; }
 
         [Required]
+        public bool Used { get; set; }
+
+        [Required]
         public string UserId { get; set; }
 
         public User User { get; set; }
