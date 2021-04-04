@@ -9,5 +9,7 @@ namespace Entities.Data
         public AppDbContext(DbContextOptions options)
             : base(options)
         {}
+
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
     }
 }
