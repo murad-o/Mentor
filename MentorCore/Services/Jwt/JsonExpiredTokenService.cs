@@ -6,11 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace MentorCore.Services.Jwt
 {
-    public class JwtExpiredTokenService : IJwtExpiredTokenService
+    public class JsonExpiredTokenService : IJsonExpiredTokenService
     {
         private readonly TokenValidation _tokenValidation;
 
-        public JwtExpiredTokenService(TokenValidation tokenValidation)
+        public JsonExpiredTokenService(TokenValidation tokenValidation)
         {
             _tokenValidation = tokenValidation;
         }

@@ -10,11 +10,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace MentorCore.Services.Jwt
 {
-    public class JwtTokenGenerator : IJwtTokenGenerator
+    public class JsonTokenGenerator : IJsonTokenGenerator
     {
         private readonly JwtConfiguration _jwtConfigurations;
 
-        public JwtTokenGenerator(JwtConfiguration jwtConfigurations)
+        public JsonTokenGenerator(JwtConfiguration jwtConfigurations)
         {
             _jwtConfigurations = jwtConfigurations;
         }

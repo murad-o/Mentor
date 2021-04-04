@@ -2,7 +2,7 @@
 
 namespace MentorCore.Interfaces.Jwt
 {
-    public interface IJwtExpiredTokenService
+    public interface IJsonExpiredTokenService
     {
         ClaimsPrincipal GetPrincipalFromExpiredToken(string expiredToken);
     }

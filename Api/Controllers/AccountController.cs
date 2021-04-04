@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -23,22 +22,22 @@ namespace Api.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly IJwtTokenGenerator _jwtTokenGenerator;
-        private readonly IJwtExpiredTokenService _jwtExpiredTokenService;
-        private readonly IJwtRefreshTokenService _jwtRefreshTokenService;
+        private readonly IJsonTokenGenerator _jsonTokenGenerator;
+        private readonly IJsonExpiredTokenService _jsonExpiredTokenService;
+        private readonly IRefreshTokenService _refreshTokenService;
 
         public AccountController(IMapper mapper, UserManager<User> userManager,
             IEmailSender emailSender, SignInManager<User> signInManager,
-            IJwtTokenGenerator jwtTokenGenerator, IJwtExpiredTokenService jwtExpiredTokenService,
-            IJwtRefreshTokenService jwtRefreshTokenService)
+            IJsonTokenGenerator jsonTokenGenerator, IJsonExpiredTokenService jsonExpiredTokenService,
+            IRefreshTokenService refreshTokenService)
         {
             _mapper = mapper;
             _userManager = userManager;
             _emailSender = emailSender;
             _signInManager = signInManager;
-            _jwtTokenGenerator = jwtTokenGenerator;
-            _jwtExpiredTokenService = jwtExpiredTokenService;
-            _jwtRefreshTokenService = jwtRefreshTokenService;
+            _jsonTokenGenerator = jsonTokenGenerator;
+            _jsonExpiredTokenService = jsonExpiredTokenService;
+            _refreshTokenService = refreshTokenService;
         }
 
         [HttpPost]
@@ -111,8 +110,8 @@ namespace Api.Controllers
 
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            var accessToken = _jwtTokenGenerator.GenerateAccessToken(claims);
-            var refreshToken = await _jwtRefreshTokenService.CreateRefreshAndExpiryTokenAsync(user);
+            var accessToken = _jsonTokenGenerator.GenerateAccessToken(claims);
+            var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user);
 
             return Ok(new {accessToken, refreshToken});
         }
@@ -121,17 +120,23 @@ namespace Api.Controllers
         [Route("token")]
         public async Task<IActionResult> RefreshToken(JwtTokenModel jwtTokenModel)
         {
-            var principal = _jwtExpiredTokenService.GetPrincipalFromExpiredToken(jwtTokenModel.AccessToken);
+            var principal = _jsonExpiredTokenService.GetPrincipalFromExpiredToken(jwtTokenModel.AccessToken);
 
             var username = principal.Identity?.Name;
             var user = await _userManager.FindByEmailAsync(username);
 
-            if (user is null || user.RefreshToken != jwtTokenModel.RefreshToken ||
-                user.RefreshTokenExpiryTime <= DateTime.Now)
+            var oldRefreshToken = await _refreshTokenService.GetRefreshTokenAsync(jwtTokenModel.RefreshToken);
+
+            if (user is null || oldRefreshToken is null || oldRefreshToken.Token != jwtTokenModel.RefreshToken)
                 return BadRequest("Invalid client request");
 
-            var newAccessToken = _jwtTokenGenerator.GenerateAccessToken(principal.Claims);
-            var newRefreshToken = await _jwtRefreshTokenService.UpdateRefreshTokenAsync(user);
+            if (_refreshTokenService.IsTokenExpired(oldRefreshToken))
+                return Unauthorized();
+
+            await _refreshTokenService.SetRefreshTokenStatusToUsedAsync(oldRefreshToken);
+
+            var newAccessToken = _jsonTokenGenerator.GenerateAccessToken(principal.Claims);
+            var newRefreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user);
 
             return Ok(new { accessToken = newAccessToken, refreshToken = newRefreshToken });
         }
@@ -148,7 +153,7 @@ namespace Api.Controllers
             if (user is null)
                 return BadRequest();
 
-            await _jwtRefreshTokenService.RevokeRefreshTokenAsync(user);
+            await _refreshTokenService.RevokeRefreshTokenAsync(user);
 
             return NoContent();
         }

@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 namespace MentorCore.Interfaces.Jwt
 {
-    public interface IJwtTokenGenerator
+    public interface IJsonTokenGenerator
     {
         string GenerateAccessToken(IEnumerable<Claim> claims);
         string GenerateRefreshToken();
