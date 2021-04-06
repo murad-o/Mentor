@@ -54,16 +54,11 @@ namespace Api.Controllers
 
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> RevokeRefreshToken()
+        public async Task<IActionResult> RevokeRefreshTokens()
         {
-            var username = User.Identity?.Name;
+            var username = User.Identity!.Name;
 
-            var user = await _userManager.FindByEmailAsync(username);
-
-            if (user is null)
-                return BadRequest();
-
-            await _refreshTokenService.RevokeRefreshTokenAsync(user);
+            await _refreshTokenService.RevokeRefreshTokensAsync(username);
 
             return NoContent();
         }
