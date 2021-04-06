@@ -8,7 +8,6 @@ using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Email;
 using MentorCore.Interfaces.Jwt;
 using MentorCore.Models.Email;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -114,48 +113,6 @@ namespace Api.Controllers
             var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user);
 
             return Ok(new {accessToken, refreshToken});
-        }
-
-        [HttpPut]
-        [Route("token")]
-        public async Task<IActionResult> RefreshToken(JwtTokenModel jwtTokenModel)
-        {
-            var principal = _jsonExpiredTokenService.GetPrincipalFromExpiredToken(jwtTokenModel.AccessToken);
-
-            var username = principal.Identity?.Name;
-            var user = await _userManager.FindByEmailAsync(username);
-
-            var oldRefreshToken = await _refreshTokenService.GetRefreshTokenAsync(jwtTokenModel.RefreshToken);
-
-            if (user is null || oldRefreshToken is null || oldRefreshToken.Token != jwtTokenModel.RefreshToken)
-                return BadRequest("Invalid client request");
-
-            if (_refreshTokenService.IsTokenExpired(oldRefreshToken))
-                return Unauthorized();
-
-            await _refreshTokenService.SetRefreshTokenStatusToUsedAsync(oldRefreshToken);
-
-            var newAccessToken = _jsonTokenGenerator.GenerateAccessToken(principal.Claims);
-            var newRefreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user);
-
-            return Ok(new { accessToken = newAccessToken, refreshToken = newRefreshToken });
-        }
-
-        [HttpDelete]
-        [Authorize]
-        [Route("token")]
-        public async Task<IActionResult> RevokeRefreshToken()
-        {
-            var username = User.Identity?.Name;
-
-            var user = await _userManager.FindByEmailAsync(username);
-
-            if (user is null)
-                return BadRequest();
-
-            await _refreshTokenService.RevokeRefreshTokenAsync(user);
-
-            return NoContent();
         }
 
         private void AddModelErrors(IdentityResult identityResult)
