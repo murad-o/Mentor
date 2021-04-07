@@ -1,10 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using Entities.Models;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Controllers
 {
@@ -30,14 +32,22 @@ namespace Api.Controllers
         [HttpPut]
         public async Task<IActionResult> RefreshToken(JwtTokenModel jwtTokenModel)
         {
-            var principal = _jsonExpiredTokenService.GetPrincipalFromExpiredToken(jwtTokenModel.AccessToken);
+            ClaimsPrincipal claimsPrincipal;
+            try
+            {
+                claimsPrincipal = _jsonExpiredTokenService.GetPrincipalFromExpiredToken(jwtTokenModel.AccessToken);
+            }
+            catch (SecurityTokenException)
+            {
+                return Unauthorized();
+            }
 
-            var username = principal.Identity?.Name;
+            var username = claimsPrincipal.Identity?.Name;
             var user = await _userManager.FindByEmailAsync(username);
 
             var oldRefreshToken = await _refreshTokenService.GetRefreshTokenAsync(jwtTokenModel.RefreshToken);
 
-            if (user is null || oldRefreshToken is null || oldRefreshToken.Token != jwtTokenModel.RefreshToken)
+            if (oldRefreshToken is null || oldRefreshToken.UserId != user.Id)
                 return BadRequest("Invalid client request");
 
             if (_refreshTokenService.IsTokenExpired(oldRefreshToken))
@@ -45,7 +55,7 @@ namespace Api.Controllers
 
             await _refreshTokenService.SetRefreshTokenStatusToUsedAsync(oldRefreshToken);
 
-            var newAccessToken = _jsonTokenGenerator.GenerateAccessToken(principal.Claims);
+            var newAccessToken = _jsonTokenGenerator.GenerateAccessToken(claimsPrincipal.Claims);
             var newRefreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user);
 
             return Ok(new { newAccessToken, newRefreshToken });
