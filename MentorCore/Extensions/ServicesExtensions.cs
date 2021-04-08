@@ -56,7 +56,7 @@ namespace MentorCore.Extensions
         public static void RegisterJwtServices(this IServiceCollection services)
         {
             services.AddSingleton<TokenValidation>();
-            services.AddSingleton<IJsonTokenGenerator, JsonTokenGenerator>();
+            services.AddSingleton<ITokenGenerator, TokenGenerator>();
             services.AddSingleton<IJsonExpiredTokenService, JsonExpiredTokenService>();
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         }

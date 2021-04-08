@@ -10,16 +10,16 @@ namespace MentorCore.Services.Jwt
     public class RefreshTokenService : IRefreshTokenService
     {
         private readonly AppDbContext _context;
-        private readonly IJsonTokenGenerator _jsonTokenGenerator;
-        public RefreshTokenService(AppDbContext context, IJsonTokenGenerator jsonTokenGenerator)
+        private readonly ITokenGenerator _tokenGenerator;
+        public RefreshTokenService(AppDbContext context, ITokenGenerator tokenGenerator)
         {
             _context = context;
-            _jsonTokenGenerator = jsonTokenGenerator;
+            _tokenGenerator = tokenGenerator;
         }
 
         public async Task<string> CreateRefreshTokenAsync(User user)
         {
-            var token = _jsonTokenGenerator.GenerateRefreshToken();
+            var token = _tokenGenerator.GenerateRefreshToken();
 
             var refreshToken = new RefreshToken
             {

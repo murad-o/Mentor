@@ -17,15 +17,15 @@ namespace Api.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IJsonExpiredTokenService _jsonExpiredTokenService;
         private readonly IRefreshTokenService _refreshTokenService;
-        private readonly IJsonTokenGenerator _jsonTokenGenerator;
+        private readonly ITokenGenerator _tokenGenerator;
 
         public TokenController(IJsonExpiredTokenService jsonExpiredTokenService, UserManager<User> userManager,
-            IRefreshTokenService refreshTokenService, IJsonTokenGenerator jsonTokenGenerator)
+            IRefreshTokenService refreshTokenService, ITokenGenerator tokenGenerator)
         {
             _jsonExpiredTokenService = jsonExpiredTokenService;
             _userManager = userManager;
             _refreshTokenService = refreshTokenService;
-            _jsonTokenGenerator = jsonTokenGenerator;
+            _tokenGenerator = tokenGenerator;
         }
 
 
@@ -55,7 +55,7 @@ namespace Api.Controllers
 
             await _refreshTokenService.SetRefreshTokenStatusToUsedAsync(oldRefreshToken);
 
-            var newAccessToken = _jsonTokenGenerator.GenerateAccessToken(claimsPrincipal.Claims);
+            var newAccessToken = _tokenGenerator.GenerateAccessToken(claimsPrincipal.Claims);
             var newRefreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user);
 
             return Ok(new { newAccessToken, newRefreshToken });

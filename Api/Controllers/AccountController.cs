@@ -21,21 +21,18 @@ namespace Api.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly IJsonTokenGenerator _jsonTokenGenerator;
-        private readonly IJsonExpiredTokenService _jsonExpiredTokenService;
+        private readonly ITokenGenerator _tokenGenerator;
         private readonly IRefreshTokenService _refreshTokenService;
 
         public AccountController(IMapper mapper, UserManager<User> userManager,
             IEmailSender emailSender, SignInManager<User> signInManager,
-            IJsonTokenGenerator jsonTokenGenerator, IJsonExpiredTokenService jsonExpiredTokenService,
-            IRefreshTokenService refreshTokenService)
+            ITokenGenerator tokenGenerator, IRefreshTokenService refreshTokenService)
         {
             _mapper = mapper;
             _userManager = userManager;
             _emailSender = emailSender;
             _signInManager = signInManager;
-            _jsonTokenGenerator = jsonTokenGenerator;
-            _jsonExpiredTokenService = jsonExpiredTokenService;
+            _tokenGenerator = tokenGenerator;
             _refreshTokenService = refreshTokenService;
         }
 
@@ -109,7 +106,7 @@ namespace Api.Controllers
 
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            var accessToken = _jsonTokenGenerator.GenerateAccessToken(claims);
+            var accessToken = _tokenGenerator.GenerateAccessToken(claims);
             var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user);
 
             return Ok(new {accessToken, refreshToken});
