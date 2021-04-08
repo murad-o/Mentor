@@ -1,21 +1,25 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+using System.Threading.Tasks;
+using Entities.Models;
 using MentorCore.Interfaces.Jwt;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MentorCore.Services.Jwt
 {
-    public class JsonExpiredTokenService : IJsonExpiredTokenService
+    public class ExpiredTokenService : IExpiredTokenService
     {
         private readonly TokenValidation _tokenValidation;
+        private readonly UserManager<User> _userManager;
 
-        public JsonExpiredTokenService(TokenValidation tokenValidation)
+        public ExpiredTokenService(TokenValidation tokenValidation, UserManager<User> userManager)
         {
             _tokenValidation = tokenValidation;
+            _userManager = userManager;
         }
 
-        public ClaimsPrincipal GetPrincipalFromExpiredToken(string expiredToken)
+        public async Task<User> GetUserFromExpiredTokenAsync(string expiredToken)
         {
             var tokenValidationParameters = _tokenValidation.CreateTokenValidationParameters();
 
@@ -26,7 +30,10 @@ namespace MentorCore.Services.Jwt
                 StringComparison.InvariantCultureIgnoreCase))
                 throw new SecurityTokenException("Invalid token");
 
-            return principal;
+            var username = principal.Identity!.Name;
+            var user = await _userManager.FindByEmailAsync(username);
+
+            return user;
         }
     }
 }

@@ -56,7 +56,7 @@ namespace MentorCore.Extensions
         {
             services.AddSingleton<TokenValidation>();
             services.AddSingleton<ITokenGenerator, TokenGenerator>();
-            services.AddSingleton<IJsonExpiredTokenService, JsonExpiredTokenService>();
+            services.AddScoped<IExpiredTokenService, ExpiredTokenService>();
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         }
 

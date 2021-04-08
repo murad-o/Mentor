@@ -1,10 +1,8 @@
-﻿using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Entities.Models;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Jwt;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -14,16 +12,14 @@ namespace Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class TokenController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
-        private readonly IJsonExpiredTokenService _jsonExpiredTokenService;
+        private readonly IExpiredTokenService _expiredTokenService;
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly ITokenGenerator _tokenGenerator;
 
-        public TokenController(IJsonExpiredTokenService jsonExpiredTokenService, UserManager<User> userManager,
+        public TokenController(IExpiredTokenService expiredTokenService,
             IRefreshTokenService refreshTokenService, ITokenGenerator tokenGenerator)
         {
-            _jsonExpiredTokenService = jsonExpiredTokenService;
-            _userManager = userManager;
+            _expiredTokenService = expiredTokenService;
             _refreshTokenService = refreshTokenService;
             _tokenGenerator = tokenGenerator;
         }
@@ -32,18 +28,15 @@ namespace Api.Controllers
         [HttpPut]
         public async Task<IActionResult> RefreshToken(JwtTokenModel jwtTokenModel)
         {
-            ClaimsPrincipal claimsPrincipal;
+            User user;
             try
             {
-                claimsPrincipal = _jsonExpiredTokenService.GetPrincipalFromExpiredToken(jwtTokenModel.AccessToken);
+                user = await _expiredTokenService.GetUserFromExpiredTokenAsync(jwtTokenModel.AccessToken);
             }
             catch (SecurityTokenException)
             {
                 return Unauthorized();
             }
-
-            var username = claimsPrincipal.Identity?.Name;
-            var user = await _userManager.FindByEmailAsync(username);
 
             var oldRefreshToken = await _refreshTokenService.GetRefreshTokenAsync(jwtTokenModel.RefreshToken);
 
