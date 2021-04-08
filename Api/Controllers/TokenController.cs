@@ -46,7 +46,7 @@ namespace Api.Controllers
             if (_refreshTokenService.IsTokenExpired(oldRefreshToken))
                 return Unauthorized();
 
-            await _refreshTokenService.SetRefreshTokenStatusToUsedAsync(oldRefreshToken);
+            await _refreshTokenService.DeactivateRefreshTokenAsync(oldRefreshToken);
 
             var newAccessToken = _tokenGenerator.GenerateAccessToken(user);
             var newRefreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user);
@@ -60,7 +60,6 @@ namespace Api.Controllers
         public async Task<IActionResult> RevokeRefreshTokens()
         {
             var username = User.Identity!.Name;
-
             await _refreshTokenService.RevokeRefreshTokensAsync(username);
 
             return NoContent();

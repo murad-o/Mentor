@@ -6,7 +6,7 @@ namespace MentorCore.Interfaces.Jwt
     public interface IRefreshTokenService
     {
         Task<string> CreateRefreshTokenAsync(User user);
-        Task SetRefreshTokenStatusToUsedAsync(RefreshToken refreshToken);
+        Task DeactivateRefreshTokenAsync(RefreshToken refreshToken);
         Task RevokeRefreshTokensAsync(string username);
         Task<RefreshToken> GetRefreshTokenAsync(string token);
         bool IsTokenExpired(RefreshToken refreshToken);
