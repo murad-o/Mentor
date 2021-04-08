@@ -30,7 +30,6 @@ namespace MentorCore.Extensions
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = true;
             })
-            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddSignInManager()
             .AddDefaultTokenProviders();

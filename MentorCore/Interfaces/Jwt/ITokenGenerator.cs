@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
+﻿using Entities.Models;
 
 namespace MentorCore.Interfaces.Jwt
 {
     public interface ITokenGenerator
     {
-        string GenerateAccessToken(IEnumerable<Claim> claims);
+        string GenerateAccessToken(User user);
         string GenerateRefreshToken();
     }
 }

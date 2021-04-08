@@ -55,7 +55,7 @@ namespace Api.Controllers
 
             await _refreshTokenService.SetRefreshTokenStatusToUsedAsync(oldRefreshToken);
 
-            var newAccessToken = _tokenGenerator.GenerateAccessToken(claimsPrincipal.Claims);
+            var newAccessToken = _tokenGenerator.GenerateAccessToken(user);
             var newRefreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user);
 
             return Ok(new { newAccessToken, newRefreshToken });

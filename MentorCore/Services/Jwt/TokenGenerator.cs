@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Entities.Models;
 using MentorCore.Interfaces.Jwt;
 using MentorCore.Models.JWT;
 using Microsoft.IdentityModel.Tokens;
@@ -19,10 +20,16 @@ namespace MentorCore.Services.Jwt
             _jwtConfigurations = jwtConfigurations;
         }
 
-        public string GenerateAccessToken(IEnumerable<Claim> claims)
+        public string GenerateAccessToken(User user)
         {
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfigurations.SecretKey));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new List<Claim>
+            {
+                new ("Id", user.Id),
+                new(ClaimTypes.Name, user.Email)
+            };
 
             var tokenOptions = new JwtSecurityToken(
                 _jwtConfigurations.ValidIssuer,
