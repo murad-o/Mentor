@@ -26,19 +26,19 @@ namespace Api.Controllers
 
 
         [HttpPut]
-        public async Task<IActionResult> RefreshToken(JwtTokenModel jwtTokenModel)
+        public async Task<IActionResult> RefreshToken(RefreshTokenModel refreshTokenModel)
         {
             User user;
             try
             {
-                user = await _expiredTokenService.GetUserFromExpiredTokenAsync(jwtTokenModel.AccessToken);
+                user = await _expiredTokenService.GetUserFromExpiredTokenAsync(refreshTokenModel.AccessToken);
             }
             catch (SecurityTokenException)
             {
                 return Unauthorized();
             }
 
-            var oldRefreshToken = await _refreshTokenService.GetRefreshTokenAsync(jwtTokenModel.RefreshToken);
+            var oldRefreshToken = await _refreshTokenService.GetRefreshTokenAsync(refreshTokenModel.RefreshToken);
 
             if (oldRefreshToken is null || oldRefreshToken.UserId != user.Id)
                 return BadRequest("Invalid client request");
