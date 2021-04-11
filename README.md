@@ -21,5 +21,13 @@ dotnet user-secrets set "EmailConfiguration:UserName" "<Your UserName>"
 dotnet user-secrets set "EmailConfiguration:Password" "<Your Password>"
 ```
 
+To generate accessToken for login you have to set data for json web token
+```
+dotnet user-secrets set "JwtConfiguration:ValidIssuer" "<ValidIssuer>"
+dotnet user-secrets set "JwtConfiguration:ValidAudience" "<ValidAudience>"
+dotnet user-secrets set "JwtConfiguration:SecretKey" "<Your SecretKey>"
+dotnet user-secrets set "JwtConfiguration:LifeTime" "<LifeTime of token>"
+```
+
 # Run
 After that apply migrations and run application
