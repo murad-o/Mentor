@@ -63,7 +63,7 @@ namespace Api.Controllers
         public async Task<IActionResult> RevokeRefreshTokens()
         {
             var username = User.Identity!.Name;
-            await _refreshTokenService.RevokeRefreshTokensAsync(username);
+            await _refreshTokenService.RemoveRefreshTokensAsync(username);
 
             return NoContent();
         }

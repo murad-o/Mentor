@@ -40,7 +40,7 @@ namespace MentorCore.Services.Jwt
             await _context.SaveChangesAsync();
         }
 
-        public async Task RevokeRefreshTokensAsync(string username)
+        public async Task RemoveRefreshTokensAsync(string username)
         {
             var user = await _context.Users
                 .Include(u => u.RefreshTokens)
