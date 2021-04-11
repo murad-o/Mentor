@@ -1,5 +1,5 @@
-using Api.Configurations;
-using MentorCore.Configurations;
+using Api.Extensions;
+using MentorCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +24,9 @@ namespace Api
 
             services.ConfigureIdentity();
 
-            services.AddAuthentication();
+            services.ConfigureJwt(Configuration);
+
+            services.RegisterJwtServices();
 
             services.ConfigureRouting();
 
@@ -40,11 +42,11 @@ namespace Api
 
             services.AddAutoMapper(typeof(AccountMappingProfile).Assembly);
 
-            services.ConfigureSmtp(Configuration);
+            services.RegisterSmtpConfigurations(Configuration);
 
-            services.ConfigureEmail(Configuration);
+            services.RegisterEmailConfigurations(Configuration);
 
-            services.AddOwnServices();
+            services.RegisterEmailSender();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -64,6 +66,7 @@ namespace Api
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseCors("CorsPolicy");
