@@ -44,9 +44,12 @@ namespace Api.Controllers
                 return BadRequest("Invalid client request");
 
             if (_refreshTokenService.IsTokenExpired(oldRefreshToken))
+            {
+                await _refreshTokenService.RemoveRefreshTokenAsync(oldRefreshToken);
                 return Unauthorized();
+            }
 
-            await _refreshTokenService.DeactivateRefreshTokenAsync(oldRefreshToken);
+            await _refreshTokenService.RemoveRefreshTokenAsync(oldRefreshToken);
 
             var newAccessToken = _tokenGenerator.GenerateAccessToken(user);
             var newRefreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user);

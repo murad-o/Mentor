@@ -34,9 +34,9 @@ namespace MentorCore.Services.Jwt
             return refreshToken.Token;
         }
 
-        public async Task DeactivateRefreshTokenAsync(RefreshToken refreshToken)
+        public async Task RemoveRefreshTokenAsync(RefreshToken refreshToken)
         {
-            refreshToken.Used = true;
+            _context.Remove(refreshToken);
             await _context.SaveChangesAsync();
         }
 
