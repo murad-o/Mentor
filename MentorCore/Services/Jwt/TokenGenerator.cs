@@ -35,7 +35,7 @@ namespace MentorCore.Services.Jwt
                 _jwtConfigurations.ValidIssuer,
                 _jwtConfigurations.ValidAudience,
                 claims,
-                expires: DateTime.Now.AddMinutes(_jwtConfigurations.LifeTime),
+                expires: DateTime.Now.AddDays(_jwtConfigurations.LifeTime),
                 signingCredentials: signinCredentials
             );
    
