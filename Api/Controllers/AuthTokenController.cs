@@ -10,13 +10,13 @@ namespace Api.Controllers
 {
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class TokenController : ControllerBase
+    public class AuthTokenController : ControllerBase
     {
         private readonly IExpiredTokenService _expiredTokenService;
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly ITokenGenerator _tokenGenerator;
 
-        public TokenController(IExpiredTokenService expiredTokenService,
+        public AuthTokenController(IExpiredTokenService expiredTokenService,
             IRefreshTokenService refreshTokenService, ITokenGenerator tokenGenerator)
         {
             _expiredTokenService = expiredTokenService;
