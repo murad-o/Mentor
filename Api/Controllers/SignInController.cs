@@ -39,6 +39,9 @@ namespace Api.Controllers
 
             var authorized = await _signInManager.CheckPasswordSignInAsync(user, loginModel.Password, false);
 
+            if (!user.EmailConfirmed)
+                return Unauthorized("Confirm your email");
+
             if (!authorized.Succeeded)
             {
                 ModelState.TryAddModelError("IncorrectCredentials", "Incorrect UserName or Password");
