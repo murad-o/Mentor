@@ -3,7 +3,6 @@ using AutoMapper;
 using Entities.Models;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Email;
-using MentorCore.Interfaces.Jwt;
 using MentorCore.Models.Email;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,21 +15,14 @@ namespace Api.Controllers
     {
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly ITokenGenerator _tokenGenerator;
-        private readonly IRefreshTokenService _refreshTokenService;
 
         public AccountController(IMapper mapper, UserManager<User> userManager,
-            IEmailSender emailSender, SignInManager<User> signInManager,
-            ITokenGenerator tokenGenerator, IRefreshTokenService refreshTokenService)
+            IEmailSender emailSender)
         {
             _mapper = mapper;
             _userManager = userManager;
             _emailSender = emailSender;
-            _signInManager = signInManager;
-            _tokenGenerator = tokenGenerator;
-            _refreshTokenService = refreshTokenService;
         }
 
         [HttpPost]
@@ -73,32 +65,6 @@ namespace Api.Controllers
 
             AddModelErrors(emailConfirmed);
             return BadRequest(ModelState);
-        }
-
-        [HttpPost]
-        [Route("login")]
-        public async Task<IActionResult> Login(LoginModel loginModel)
-        {
-            var user = await _userManager.FindByEmailAsync(loginModel.Email);
-
-            if (user is null)
-            {
-                ModelState.TryAddModelError("IncorrectCredentials", "Incorrect UserName or Password");
-                return BadRequest(ModelState);
-            }
-
-            var authorized = await _signInManager.CheckPasswordSignInAsync(user, loginModel.Password, false);
-
-            if (!authorized.Succeeded)
-            {
-                ModelState.TryAddModelError("IncorrectCredentials", "Incorrect UserName or Password");
-                return BadRequest(ModelState);
-            }
-
-            var accessToken = _tokenGenerator.GenerateAccessToken(user);
-            var refreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user);
-
-            return Ok(new {accessToken, refreshToken});
         }
 
         private void AddModelErrors(IdentityResult identityResult)
