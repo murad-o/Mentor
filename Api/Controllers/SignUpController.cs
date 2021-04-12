@@ -11,13 +11,13 @@ namespace Api.Controllers
 {
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class SingUpController : ControllerBase
+    public class SignUpController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
 
-        public SingUpController(IMapper mapper, UserManager<User> userManager,
+        public SignUpController(IMapper mapper, UserManager<User> userManager,
             IEmailSender emailSender)
         {
             _mapper = mapper;
