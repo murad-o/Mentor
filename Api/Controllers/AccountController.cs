@@ -32,16 +32,11 @@ namespace Api.Controllers
             if (emailConfirmed.Succeeded)
                 return Content("Your email confirmed successfully");
 
-            AddModelErrors(emailConfirmed);
-            return BadRequest(ModelState);
-        }
-
-        private void AddModelErrors(IdentityResult identityResult)
-        {
-            foreach (var error in identityResult.Errors)
+            foreach (var error in emailConfirmed.Errors)
             {
                 ModelState.TryAddModelError(error.Code, error.Description);
             }
+            return BadRequest(ModelState);
         }
     }
 }
