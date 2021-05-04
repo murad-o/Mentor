@@ -7,6 +7,9 @@ namespace Entities.Models
         public int Id { get; set; }
 
         [Required]
+        public int Number { get; set; }
+
+        [Required]
         public string Name { get; set; }
 
         [Required]
