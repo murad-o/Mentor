@@ -47,6 +47,8 @@ namespace Api
             services.RegisterEmailConfigurations(Configuration);
 
             services.RegisterEmailSender();
+
+            services.RegisterCourseService();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
