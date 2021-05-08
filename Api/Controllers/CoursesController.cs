@@ -3,7 +3,9 @@ using AutoMapper;
 using Entities.Models;
 using MentorCore.DTO.Courses;
 using MentorCore.Interfaces.Courses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Controllers
 {
@@ -22,11 +24,20 @@ namespace Api.Controllers
 
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateCourse(CreateCourseModel courseModel)
         {
             var course = _mapper.Map<Course>(courseModel);
 
-            await _courseService.CreateCourseAsync(course);
+            try
+            {
+                await _courseService.CreateCourseAsync(course);
+            }
+            catch (SecurityTokenException)
+            {
+                return BadRequest();
+            }
+
             return StatusCode(201);
         }
     }
