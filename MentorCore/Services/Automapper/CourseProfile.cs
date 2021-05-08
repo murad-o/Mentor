@@ -8,6 +8,7 @@ namespace MentorCore.Services.Automapper
     {
         public CourseProfile()
         {
+            CreateMap<Course, CourseModel>();
             CreateMap<CreateCourseModel, Course>();
         }
     }

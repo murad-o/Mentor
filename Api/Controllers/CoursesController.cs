@@ -1,5 +1,4 @@
-﻿using System.Security;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
 using Entities.Models;
 using MentorCore.DTO.Courses;
@@ -25,6 +24,19 @@ namespace Api.Controllers
             _courseService = courseService;
             _mapper = mapper;
             _currentUserService = currentUserService;
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CourseModel>> GetCourse(int id)
+        {
+            var course = await _courseService.GetCourseAsync(id);
+
+            if (course is null)
+                return NotFound();
+
+            var courseResponse = _mapper.Map<CourseModel>(course);
+            return courseResponse;
         }
 
 
