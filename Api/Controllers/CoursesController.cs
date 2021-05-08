@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security;
+using System.Threading.Tasks;
 using AutoMapper;
 using Entities.Models;
 using MentorCore.DTO.Courses;
+using MentorCore.Interfaces.Account;
 using MentorCore.Interfaces.Courses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +17,14 @@ namespace Api.Controllers
     {
         private readonly ICourseService _courseService;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUserService;
 
-        public CoursesController(ICourseService courseService, IMapper mapper)
+        public CoursesController(ICourseService courseService, IMapper mapper,
+            ICurrentUserService currentUserService)
         {
             _courseService = courseService;
             _mapper = mapper;
+            _currentUserService = currentUserService;
         }
 
 
@@ -39,6 +44,33 @@ namespace Api.Controllers
             }
 
             return StatusCode(201);
+        }
+
+
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateCourse(int id, UpdateCourseModel updateCourseModel)
+        {
+            try
+            {
+                var courseToUpdate = await _courseService.GetCourseAsync(id);
+
+                if (courseToUpdate is null)
+                    return NotFound();
+
+                var currentUser = await _currentUserService.GetCurrentUser();
+
+                if (!_courseService.IsUserOwner(currentUser, courseToUpdate))
+                    return BadRequest();
+
+                await _courseService.UpdateCourseAsync(courseToUpdate, updateCourseModel);
+
+                return NoContent();
+            }
+            catch (SecurityException)
+            {
+                return BadRequest();
+            }
         }
     }
 }
