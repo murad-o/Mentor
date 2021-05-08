@@ -67,7 +67,7 @@ namespace Api.Controllers
 
                 return NoContent();
             }
-            catch (SecurityException)
+            catch (SecurityTokenException)
             {
                 return BadRequest();
             }
