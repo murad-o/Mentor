@@ -1,3 +1,5 @@
+using System;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -41,7 +43,34 @@ namespace Api.Extensions
         {
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mentor API", Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Scheme = "Bearer",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Name = "Bearer",
+                            Scheme = JwtBearerDefaults.AuthenticationScheme,
+                            In = ParameterLocation.Header,
+                            Type = SecuritySchemeType.ApiKey
+                        },
+                        Array.Empty<string>()
+                    }
+                });
             });
         }
     }
