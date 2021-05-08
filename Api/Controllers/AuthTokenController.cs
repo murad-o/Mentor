@@ -12,14 +12,14 @@ namespace Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class AuthTokenController : ControllerBase
     {
-        private readonly IExpiredTokenService _expiredTokenService;
+        private readonly IAccessTokenService _accessTokenService;
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly ITokenGenerator _tokenGenerator;
 
-        public AuthTokenController(IExpiredTokenService expiredTokenService,
+        public AuthTokenController(IAccessTokenService accessTokenService,
             IRefreshTokenService refreshTokenService, ITokenGenerator tokenGenerator)
         {
-            _expiredTokenService = expiredTokenService;
+            _accessTokenService = accessTokenService;
             _refreshTokenService = refreshTokenService;
             _tokenGenerator = tokenGenerator;
         }
@@ -31,7 +31,7 @@ namespace Api.Controllers
             User user;
             try
             {
-                user = await _expiredTokenService.GetUserFromExpiredTokenAsync(refreshTokenModel.AccessToken);
+                user = await _accessTokenService.GetUserFromAccessTokenAsync(refreshTokenModel.AccessToken);
             }
             catch (SecurityTokenException)
             {
