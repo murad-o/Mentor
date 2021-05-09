@@ -48,6 +48,12 @@ namespace MentorCore.Services.Courses
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task RemoveCourseAsync(Course course)
+        {
+            _dbContext.Courses.Remove(course);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public bool IsUserOwner(User user, Course course)
         {
             return user.Id == course.UserId;

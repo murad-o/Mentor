@@ -11,6 +11,7 @@ namespace MentorCore.Interfaces.Courses
         Task<IEnumerable<Course>> GetCoursesAsync();
         Task CreateCourseAsync(Course course);
         Task UpdateCourseAsync(Course course, UpdateCourseModel updateCourseModel);
+        Task RemoveCourseAsync(Course course);
         bool IsUserOwner(User user, Course course);
     }
 }

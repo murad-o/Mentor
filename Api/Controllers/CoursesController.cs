@@ -99,5 +99,31 @@ namespace Api.Controllers
                 return BadRequest();
             }
         }
+
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> RemoveCourse(int id)
+        {
+            try
+            {
+                var course = await _courseService.GetCourseAsync(id);
+
+                if (course is null)
+                    return NotFound();
+
+                var currentUser = await _currentUserService.GetCurrentUser();
+
+                if (!_courseService.IsUserOwner(currentUser, course))
+                    return BadRequest();
+
+                await _courseService.RemoveCourseAsync(course);
+                return NoContent();
+            }
+            catch (SecurityTokenException)
+            {
+                return BadRequest();
+            }
+        }
     }
 }
