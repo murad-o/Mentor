@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Entities.Data;
 using Entities.Models;
 using MentorCore.DTO.Courses;
@@ -13,15 +14,20 @@ namespace MentorCore.Services.Courses
         private readonly AppDbContext _dbContext;
         private readonly ICurrentUserService _currentUserService;
 
+        public CourseService(AppDbContext dbContext, ICurrentUserService currentUserService)
+        {
+            _dbContext = dbContext;
+            _currentUserService = currentUserService;
+        }
+
         public async Task<Course> GetCourseAsync(int id)
         {
             return await _dbContext.Courses.FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public CourseService(AppDbContext dbContext, ICurrentUserService currentUserService)
+        public async Task<IEnumerable<Course>> GetCoursesAsync()
         {
-            _dbContext = dbContext;
-            _currentUserService = currentUserService;
+            return await _dbContext.Courses.AsNoTracking().ToListAsync();
         }
 
         public async Task CreateCourseAsync(Course course)

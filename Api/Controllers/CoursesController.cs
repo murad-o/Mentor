@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Entities.Models;
 using MentorCore.DTO.Courses;
@@ -37,6 +39,19 @@ namespace Api.Controllers
 
             var courseResponse = _mapper.Map<CourseModel>(course);
             return courseResponse;
+        }
+
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<CourseModel>>> GetCourses()
+        {
+            var courses = await _courseService.GetCoursesAsync();
+
+            if (!courses.Any())
+                return NotFound();
+
+            var coursesResponse = courses.Select(c => _mapper.Map<CourseModel>(c));
+            return Ok(coursesResponse);
         }
 
 
