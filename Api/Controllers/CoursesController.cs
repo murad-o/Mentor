@@ -101,7 +101,7 @@ namespace Api.Controllers
         }
 
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> RemoveCourse(int id)
         {
