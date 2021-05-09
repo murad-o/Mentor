@@ -21,32 +21,26 @@ namespace Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureDatabase(Configuration);
-
             services.ConfigureIdentity();
-
-            services.ConfigureJwt(Configuration);
-
-            services.RegisterJwtServices();
-
             services.ConfigureRouting();
-
-            services.AddHttpContextAccessor();
-
             services.AddControllers();
 
             services.ConfigureCors();
-
             services.ConfigureApiVersion();
-
             services.ConfigureSwagger();
 
+            services.AddHttpContextAccessor();
             services.AddAutoMapper(typeof(AccountMappingProfile).Assembly);
 
-            services.RegisterSmtpConfigurations(Configuration);
+            services.ConfigureJwt(Configuration);
+            services.RegisterJwtServices();
 
+            services.RegisterSmtpConfigurations(Configuration);
             services.RegisterEmailConfigurations(Configuration);
 
             services.RegisterEmailSender();
+            services.RegisterCourseService();
+            services.RegisterCurrentUserService();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

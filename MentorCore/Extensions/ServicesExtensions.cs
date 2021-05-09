@@ -1,9 +1,13 @@
 ﻿using Entities.Data;
 using Entities.Models;
+using MentorCore.Interfaces.Account;
+using MentorCore.Interfaces.Courses;
 using MentorCore.Interfaces.Email;
 using MentorCore.Interfaces.Jwt;
 using MentorCore.Models.Email;
 using MentorCore.Models.JWT;
+using MentorCore.Services.Account;
+using MentorCore.Services.Courses;
 using MentorCore.Services.Email;
 using MentorCore.Services.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -56,7 +60,7 @@ namespace MentorCore.Extensions
         {
             services.AddSingleton<TokenValidation>();
             services.AddSingleton<ITokenGenerator, TokenGenerator>();
-            services.AddScoped<IExpiredTokenService, ExpiredTokenService>();
+            services.AddScoped<IAccessTokenService, AccessTokenService>();
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         }
 
@@ -81,6 +85,16 @@ namespace MentorCore.Extensions
         public static void RegisterEmailSender(this IServiceCollection services)
         {
             services.AddTransient<IEmailSender, EmailSender>();
+        }
+
+        public static void RegisterCourseService(this IServiceCollection services)
+        {
+            services.AddScoped<ICourseService, CourseService>();
+        }
+
+        public static void RegisterCurrentUserService(this IServiceCollection services)
+        {
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
         }
     }
 }

@@ -8,23 +8,23 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace MentorCore.Services.Jwt
 {
-    public class ExpiredTokenService : IExpiredTokenService
+    public class AccessTokenService : IAccessTokenService
     {
         private readonly TokenValidation _tokenValidation;
         private readonly UserManager<User> _userManager;
 
-        public ExpiredTokenService(TokenValidation tokenValidation, UserManager<User> userManager)
+        public AccessTokenService(TokenValidation tokenValidation, UserManager<User> userManager)
         {
             _tokenValidation = tokenValidation;
             _userManager = userManager;
         }
 
-        public async Task<User> GetUserFromExpiredTokenAsync(string expiredToken)
+        public async Task<User> GetUserFromAccessTokenAsync(string accessToken)
         {
             var tokenValidationParameters = _tokenValidation.CreateTokenValidationParameters();
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var principal = tokenHandler.ValidateToken(expiredToken, tokenValidationParameters, out var securityToken);
+            var principal = tokenHandler.ValidateToken(accessToken, tokenValidationParameters, out var securityToken);
 
             if (!(securityToken is JwtSecurityToken jwtSecurityToken) || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
                 StringComparison.InvariantCultureIgnoreCase))

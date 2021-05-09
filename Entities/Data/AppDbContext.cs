@@ -11,5 +11,9 @@ namespace Entities.Data
         {}
 
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+        public DbSet<Course> Courses { get; set; }
+
+        public DbSet<Lesson> Lessons { get; set; }
     }
 }
