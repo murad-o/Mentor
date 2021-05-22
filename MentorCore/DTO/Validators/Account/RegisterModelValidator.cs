@@ -1,7 +1,7 @@
 using FluentValidation;
 using MentorCore.DTO.Account;
 
-namespace MentorCore.DTO.Validators
+namespace MentorCore.DTO.Validators.Account
 {
     public class RegisterModelValidator : AbstractValidator<RegisterModel>
     {
