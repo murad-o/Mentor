@@ -1,6 +1,5 @@
 using System;
 using FluentValidation.AspNetCore;
-using MentorCore.DTO.Validators;
 using MentorCore.DTO.Validators.Account;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
