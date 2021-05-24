@@ -1,13 +1,12 @@
 using System.Threading.Tasks;
+using Api.Controllers.Common;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Jwt;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class SignOutController : ControllerBase
+    public class SignOutController : BaseController
     {
         private readonly IRefreshTokenService _refreshTokenService;
 

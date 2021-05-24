@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Api.Controllers.Common;
 using Entities.Models;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Jwt;
@@ -8,9 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Controllers
 {
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class AuthTokenController : ControllerBase
+    public class AuthTokenController : BaseController
     {
         private readonly IAccessTokenService _accessTokenService;
         private readonly IRefreshTokenService _refreshTokenService;
