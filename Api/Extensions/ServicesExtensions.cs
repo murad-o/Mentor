@@ -1,8 +1,11 @@
 using System;
+using FluentValidation.AspNetCore;
+using MentorCore.DTO.Validators.Account;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Api.Extensions
 {
@@ -22,6 +25,12 @@ namespace Api.Extensions
                         .AllowAnyMethod()
                         .AllowAnyHeader());
             });
+        }
+
+        public static void ConfigureControllers(this IServiceCollection services)
+        {
+            services.AddControllers().AddFluentValidation(fv =>
+                fv.RegisterValidatorsFromAssemblyContaining<LoginModelValidator>());
         }
 
         public static void ConfigureApiVersion(this IServiceCollection services)
@@ -71,6 +80,7 @@ namespace Api.Extensions
                         Array.Empty<string>()
                     }
                 });
+                c.AddFluentValidationRules();
             });
         }
     }
