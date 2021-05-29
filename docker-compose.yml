@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  api:
+    build:
+      context: ./
+      dockerfile: Api/Dockerfile
+    image: mentor-api:latest
+    container_name: mentor-api
+    restart: always
+    ports:
+    - ${}
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
