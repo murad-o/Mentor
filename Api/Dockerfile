@@ -4,9 +4,9 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Api/Api.csproj", "Api"]
-COPY ["Entities/Entities.csproj", "Entities"]
-COPY ["MentoreCore/MentoreCore.csproj", "MentorCore"]
+COPY ["Api/Api.csproj", "Api/"]
+COPY ["Entities/Entities.csproj", "Entities/"]
+COPY ["MentorCore/MentorCore.csproj", "MentorCore/"]
 RUN dotnet restore "Api/Api.csproj"
 COPY . .
 

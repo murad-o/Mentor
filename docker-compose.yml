@@ -8,6 +8,8 @@ services:
     container_name: mentor-api
     restart: always
     ports:
-    - ${}
+    - "81:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+    env_file:
+      - secrets/secrets.env
