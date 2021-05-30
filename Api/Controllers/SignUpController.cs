@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Api.Controllers.Common;
 using AutoMapper;
 using Entities.Models;
 using MentorCore.DTO.Account;
@@ -9,9 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class SignUpController : ControllerBase
+    public class SignUpController : BaseController
     {
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;

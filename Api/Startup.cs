@@ -17,13 +17,13 @@ namespace Api
         }
 
         public IConfiguration Configuration { get; }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureDatabase(Configuration);
             services.ConfigureIdentity();
             services.ConfigureRouting();
-            services.AddControllers();
+            services.ConfigureControllers();
 
             services.ConfigureCors();
             services.ConfigureApiVersion();

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Api.Controllers.Common;
 using Entities.Models;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Jwt;
@@ -7,9 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class SignInController : ControllerBase
+    public class SignInController : BaseController
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;

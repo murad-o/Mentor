@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Api.Controllers.Common;
 using Entities.Models;
 using MentorCore.DTO.Account;
 using Microsoft.AspNetCore.Identity;
@@ -6,9 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class AccountController : ControllerBase
+    public class AccountController : BaseController
     {
         private readonly UserManager<User> _userManager;
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Api.Controllers.Common;
 using AutoMapper;
 using Entities.Models;
 using MentorCore.DTO.Courses;
@@ -12,9 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Controllers
 {
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class CoursesController : ControllerBase
+    public class CoursesController : BaseController
     {
         private readonly ICourseService _courseService;
         private readonly IMapper _mapper;
