@@ -1,15 +1,30 @@
 version: "3.9"
+
 services:
+  postgres:
+    image: postgres
+    container_name: mentor-postgres
+    ports:
+      - "55432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
   api:
     build:
       context: ./
       dockerfile: Api/Dockerfile
-    image: mentor-api:latest
+    depends_on:
+      - "postgres"
+    image: mentor-api
     container_name: mentor-api
-    restart: always
     ports:
       - "8080:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     env_file:
       - secrets/secrets.env
+    restart: always
+
+volumes:
+  postgres_data:
