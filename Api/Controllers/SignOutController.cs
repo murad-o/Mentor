@@ -21,9 +21,10 @@ namespace Api.Controllers
         {
             var refreshToken = await _refreshTokenService.GetRefreshTokenAsync(logoutModel.RefreshToken);
 
-            if (refreshToken is not null)
-                await _refreshTokenService.RemoveRefreshTokenAsync(refreshToken);
+            if (refreshToken is null)
+                return NotFound("Refresh token is not found");
 
+            await _refreshTokenService.RemoveRefreshTokenAsync(refreshToken);
             return NoContent();
         }
     }
