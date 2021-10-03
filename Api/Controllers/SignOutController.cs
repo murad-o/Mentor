@@ -16,6 +16,11 @@ namespace Api.Controllers
         }
 
 
+        /// <summary>
+        /// Log out
+        /// </summary>
+        /// <param name="logoutModel"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Logout(LogoutModel logoutModel)
         {

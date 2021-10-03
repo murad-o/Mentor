@@ -28,6 +28,11 @@ namespace Api.Controllers
         }
 
 
+        /// <summary>
+        /// Get course by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<CourseModel>> GetCourse(int id)
         {
@@ -41,6 +46,10 @@ namespace Api.Controllers
         }
 
 
+        /// <summary>
+        /// Get all courses
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CourseModel>>> GetCourses()
         {
@@ -54,6 +63,11 @@ namespace Api.Controllers
         }
 
 
+        /// <summary>
+        /// Create course
+        /// </summary>
+        /// <param name="courseModel"></param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateCourse(CreateCourseModel courseModel)
@@ -73,6 +87,12 @@ namespace Api.Controllers
         }
 
 
+        /// <summary>
+        /// Update course
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="updateCourseModel"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> UpdateCourse(int id, UpdateCourseModel updateCourseModel)
@@ -100,6 +120,11 @@ namespace Api.Controllers
         }
 
 
+        /// <summary>
+        /// Remove course
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> RemoveCourse(int id)

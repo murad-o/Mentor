@@ -25,6 +25,11 @@ namespace Api.Controllers
         }
 
 
+        /// <summary>
+        /// Login
+        /// </summary>
+        /// <param name="loginModel"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel loginModel)
         {

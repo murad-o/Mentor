@@ -25,6 +25,11 @@ namespace Api.Controllers
         }
 
 
+        /// <summary>
+        /// Sign up
+        /// </summary>
+        /// <param name="registerModel"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult> SignUp(RegisterModel registerModel)
         {
