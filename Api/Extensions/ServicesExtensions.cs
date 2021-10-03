@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Reflection;
 using FluentValidation.AspNetCore;
 using MentorCore.DTO.Validators.Account;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -81,6 +83,10 @@ namespace Api.Extensions
                     }
                 });
                 c.AddFluentValidationRules();
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
         }
     }

@@ -17,8 +17,12 @@ namespace Api.Controllers
         }
 
 
-        [HttpGet]
-        [Route("email/confirmation")]
+        /// <summary>
+        /// Email confirmation
+        /// </summary>
+        /// <param name="emailModel"></param>
+        /// <returns></returns>
+        [HttpGet("email/confirmation")]
         public async Task<ActionResult> ConfirmEmail([FromQuery] EmailConfirmationModel emailModel)
         {
             var user = await _userManager.FindByEmailAsync(emailModel.Email);

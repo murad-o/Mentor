@@ -24,6 +24,11 @@ namespace Api.Controllers
         }
 
 
+        /// <summary>
+        /// Update refresh token
+        /// </summary>
+        /// <param name="refreshTokenModel"></param>
+        /// <returns></returns>
         [HttpPut]
         public async Task<IActionResult> RefreshToken(RefreshTokenModel refreshTokenModel)
         {
@@ -57,6 +62,10 @@ namespace Api.Controllers
         }
 
 
+        /// <summary>
+        /// Revoke all user refresh tokens
+        /// </summary>
+        /// <returns></returns>
         [HttpDelete]
         [Authorize]
         public async Task<IActionResult> RevokeRefreshTokens()
