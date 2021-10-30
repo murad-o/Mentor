@@ -4,23 +4,23 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Entities.Models;
+using MentorCore.DTO.Users;
 using MentorCore.Interfaces.Jwt;
 using MentorCore.Models.JWT;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MentorCore.Services.Jwt
 {
-    public class TokenGenerator : ITokenGenerator
+    public class JwtTokenGenerator : IJwtTokenGenerator
     {
         private readonly JwtConfiguration _jwtConfigurations;
 
-        public TokenGenerator(JwtConfiguration jwtConfigurations)
+        public JwtTokenGenerator(JwtConfiguration jwtConfigurations)
         {
             _jwtConfigurations = jwtConfigurations;
         }
 
-        public string GenerateAccessToken(User user)
+        public string GenerateAccessToken(UserModel user)
         {
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfigurations.SecretKey));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);

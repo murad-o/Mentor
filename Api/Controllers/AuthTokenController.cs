@@ -1,64 +1,35 @@
 ﻿using System.Threading.Tasks;
 using Api.Controllers.Common;
-using Entities.Models;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Jwt;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Controllers
 {
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class AuthTokenController : BaseController
     {
-        private readonly IAccessTokenService _accessTokenService;
-        private readonly IRefreshTokenService _refreshTokenService;
-        private readonly ITokenGenerator _tokenGenerator;
+        private readonly IJwtTokenService _jwtTokenService;
 
-        public AuthTokenController(IAccessTokenService accessTokenService,
-            IRefreshTokenService refreshTokenService, ITokenGenerator tokenGenerator)
+        public AuthTokenController(IJwtTokenService jwtTokenService)
         {
-            _accessTokenService = accessTokenService;
-            _refreshTokenService = refreshTokenService;
-            _tokenGenerator = tokenGenerator;
+            _jwtTokenService = jwtTokenService;
         }
 
 
         /// <summary>
         /// Update refresh token
         /// </summary>
-        /// <param name="refreshTokenModel"></param>
+        /// <param name="jwtTokenModel"></param>
         /// <returns></returns>
         [HttpPut]
-        public async Task<IActionResult> RefreshToken(RefreshTokenModel refreshTokenModel)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateRefreshToken(JwtTokenModel jwtTokenModel)
         {
-            User user;
-            try
-            {
-                user = await _accessTokenService.GetUserFromAccessTokenAsync(refreshTokenModel.AccessToken);
-            }
-            catch (SecurityTokenException)
-            {
-                return Unauthorized();
-            }
-
-            var oldRefreshToken = await _refreshTokenService.GetRefreshTokenAsync(refreshTokenModel.RefreshToken);
-
-            if (oldRefreshToken is null || oldRefreshToken.UserId != user.Id)
-                return BadRequest("Invalid client request");
-
-            if (_refreshTokenService.IsTokenExpired(oldRefreshToken))
-            {
-                await _refreshTokenService.RemoveRefreshTokenAsync(oldRefreshToken);
-                return Unauthorized();
-            }
-
-            await _refreshTokenService.RemoveRefreshTokenAsync(oldRefreshToken);
-
-            var newAccessToken = _tokenGenerator.GenerateAccessToken(user);
-            var newRefreshToken = await _refreshTokenService.CreateRefreshTokenAsync(user);
-
-            return Ok(new { newAccessToken, newRefreshToken });
+            var jwtToken = await _jwtTokenService.UpdateJwtTokenAsync(jwtTokenModel);
+            return Ok(jwtToken);
         }
 
 
@@ -68,11 +39,10 @@ namespace Api.Controllers
         /// <returns></returns>
         [HttpDelete]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> RevokeRefreshTokens()
         {
-            var username = User.Identity!.Name;
-            await _refreshTokenService.RemoveRefreshTokensAsync(username);
-
+            await _jwtTokenService.RemoveRefreshTokensAsync();
             return NoContent();
         }
     }

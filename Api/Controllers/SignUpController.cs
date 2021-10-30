@@ -1,27 +1,18 @@
 using System.Threading.Tasks;
 using Api.Controllers.Common;
-using AutoMapper;
-using Entities.Models;
 using MentorCore.DTO.Account;
-using MentorCore.Interfaces.Email;
-using MentorCore.Models.Email;
-using Microsoft.AspNetCore.Identity;
+using MentorCore.Interfaces.Account;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
     public class SignUpController : BaseController
     {
-        private readonly IMapper _mapper;
-        private readonly UserManager<User> _userManager;
-        private readonly IEmailSender _emailSender;
+        private readonly IAccountService _accountService;
 
-        public SignUpController(IMapper mapper, UserManager<User> userManager,
-            IEmailSender emailSender)
+        public SignUpController(IAccountService accountService)
         {
-            _mapper = mapper;
-            _userManager = userManager;
-            _emailSender = emailSender;
+            _accountService = accountService;
         }
 
 
@@ -33,26 +24,7 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<ActionResult> SignUp(RegisterModel registerModel)
         {
-            var user = _mapper.Map<User>(registerModel);
-            var userCreated = await _userManager.CreateAsync(user, registerModel.Password);
-
-            if (!userCreated.Succeeded)
-            {
-                foreach (var error in userCreated.Errors)
-                {
-                    ModelState.TryAddModelError(error.Code, error.Description);
-                }
-                return BadRequest(ModelState);
-            }
-
-            var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var emailConfirmationLink = Url.Action("ConfirmEmail", "Account",
-                new {email = user.Email, token = emailConfirmationToken}, Request.Scheme);
-
-            var emailMessage = new EmailMessage(user.Email, "Confirming email",
-                $"To confirm email follow the link: {emailConfirmationLink}");
-            await _emailSender.SendAsync(emailMessage);
-
+            await _accountService.SignUpAsync(registerModel);
             return Ok();
         }
     }

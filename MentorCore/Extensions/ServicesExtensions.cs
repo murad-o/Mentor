@@ -4,12 +4,14 @@ using MentorCore.Interfaces.Account;
 using MentorCore.Interfaces.Courses;
 using MentorCore.Interfaces.Email;
 using MentorCore.Interfaces.Jwt;
+using MentorCore.Interfaces.Users;
 using MentorCore.Models.Email;
 using MentorCore.Models.JWT;
 using MentorCore.Services.Account;
 using MentorCore.Services.Courses;
 using MentorCore.Services.Email;
 using MentorCore.Services.Jwt;
+using MentorCore.Services.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -59,9 +61,8 @@ namespace MentorCore.Extensions
         public static void RegisterJwtServices(this IServiceCollection services)
         {
             services.AddSingleton<TokenValidation>();
-            services.AddSingleton<ITokenGenerator, TokenGenerator>();
-            services.AddScoped<IAccessTokenService, AccessTokenService>();
-            services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+            services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+            services.AddScoped<IJwtTokenService, JwtTokenService>();
         }
 
         public static void RegisterSmtpConfigurations(this IServiceCollection services, IConfiguration configuration)
@@ -92,9 +93,14 @@ namespace MentorCore.Extensions
             services.AddScoped<ICourseService, CourseService>();
         }
 
-        public static void RegisterCurrentUserService(this IServiceCollection services)
+        public static void RegisterAccountService(this IServiceCollection services)
         {
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IAccountService, AccountService>();
+        }
+
+        public static void RegisterUserService(this IServiceCollection services)
+        {
+            services.AddScoped<IUserService, UserService>();
         }
     }
 }

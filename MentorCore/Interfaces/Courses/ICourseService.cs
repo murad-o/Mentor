@@ -1,17 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Entities.Models;
 using MentorCore.DTO.Courses;
 
 namespace MentorCore.Interfaces.Courses
 {
     public interface ICourseService
     {
-        Task<Course> GetCourseAsync(int id);
-        Task<IEnumerable<Course>> GetCoursesAsync();
-        Task CreateCourseAsync(Course course);
-        Task UpdateCourseAsync(Course course, UpdateCourseModel updateCourseModel);
-        Task RemoveCourseAsync(Course course);
-        bool IsUserOwner(User user, Course course);
+        Task<CourseModel> GetCourseAsync(int id);
+        Task<IEnumerable<CourseModel>> GetCoursesAsync();
+        Task CreateCourseAsync(CreateCourseModel createCourseModel);
+        Task UpdateCourseAsync(int courseId, UpdateCourseModel updateCourseModel);
+        Task RemoveCourseAsync(int courseId);
     }
 }

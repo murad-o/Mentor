@@ -3,7 +3,7 @@ using MentorCore.DTO.Account;
 
 namespace MentorCore.DTO.Validators.Account
 {
-    public class RefreshTokenModelValidator : AbstractValidator<RefreshTokenModel>
+    public class RefreshTokenModelValidator : AbstractValidator<JwtTokenModel>
     {
         public RefreshTokenModelValidator()
         {

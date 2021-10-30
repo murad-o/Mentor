@@ -1,18 +1,18 @@
 using System.Threading.Tasks;
 using Api.Controllers.Common;
 using MentorCore.DTO.Account;
-using MentorCore.Interfaces.Jwt;
+using MentorCore.Interfaces.Account;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
     public class SignOutController : BaseController
     {
-        private readonly IRefreshTokenService _refreshTokenService;
+        private readonly IAccountService _accountService;
 
-        public SignOutController(IRefreshTokenService refreshTokenService)
+        public SignOutController(IAccountService accountService)
         {
-            _refreshTokenService = refreshTokenService;
+            _accountService = accountService;
         }
 
 
@@ -24,12 +24,7 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout(LogoutModel logoutModel)
         {
-            var refreshToken = await _refreshTokenService.GetRefreshTokenAsync(logoutModel.RefreshToken);
-
-            if (refreshToken is null)
-                return NotFound("Refresh token is not found");
-
-            await _refreshTokenService.RemoveRefreshTokenAsync(refreshToken);
+            await _accountService.SignOutAsync(logoutModel);
             return NoContent();
         }
     }

@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Entities.Data;
 using Entities.Models;
 using MentorCore.DTO.Courses;
-using MentorCore.Interfaces.Account;
+using MentorCore.DTO.Users;
+using MentorCore.Exceptions;
 using MentorCore.Interfaces.Courses;
+using MentorCore.Interfaces.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace MentorCore.Services.Courses
@@ -12,49 +16,84 @@ namespace MentorCore.Services.Courses
     public class CourseService : ICourseService
     {
         private readonly AppDbContext _dbContext;
-        private readonly ICurrentUserService _currentUserService;
+        private readonly IMapper _mapper;
+        private readonly IUserService _userService;
 
-        public CourseService(AppDbContext dbContext, ICurrentUserService currentUserService)
+        public CourseService(AppDbContext dbContext, IMapper mapper, IUserService userService)
         {
             _dbContext = dbContext;
-            _currentUserService = currentUserService;
+            _mapper = mapper;
+            _userService = userService;
         }
 
-        public async Task<Course> GetCourseAsync(int id)
+        public async Task<CourseModel> GetCourseAsync(int id)
         {
-            return await _dbContext.Courses.FirstOrDefaultAsync(c => c.Id == id);
+            var course = await _dbContext.Courses.FirstOrDefaultAsync(c => c.Id == id);
+
+            if (course is null)
+                throw new NotFoundException("course is not found");
+
+            var courseModel = _mapper.Map<CourseModel>(course);
+            return courseModel;
         }
 
-        public async Task<IEnumerable<Course>> GetCoursesAsync()
+        public async Task<IEnumerable<CourseModel>> GetCoursesAsync()
         {
-            return await _dbContext.Courses.AsNoTracking().ToListAsync();
+            var courses = await _dbContext.Courses.AsNoTracking().ToListAsync();
+
+            var coursesModels = courses.Select(c => _mapper.Map<CourseModel>(c));
+            return coursesModels;
         }
 
-        public async Task CreateCourseAsync(Course course)
+        public async Task CreateCourseAsync(CreateCourseModel courseModel)
         {
-            var user = await _currentUserService.GetCurrentUser();
-            course.User = user;
+            var user = await _userService.GetCurrentUser();
+
+            var course = new Course
+            {
+                Name = courseModel.Name,
+                Description = courseModel.Description,
+                UserId = user.Id
+            };
 
             await _dbContext.Courses.AddAsync(course);
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateCourseAsync(Course course, UpdateCourseModel updateCourseModel)
+        public async Task UpdateCourseAsync(int courseId, UpdateCourseModel updateCourseModel)
         {
-            course.Name = updateCourseModel.Name;
-            course.Description = updateCourseModel.Description;
+            var courseToUpdate = await _dbContext.Courses.FirstOrDefaultAsync(x => x.Id == courseId);
 
-            _dbContext.Attach(course).State = EntityState.Modified;
+            if (courseToUpdate is null)
+                throw new NotFoundException($"Course with id {courseId} not found");
+
+            var currentUser = await _userService.GetCurrentUser();
+
+            if (!IsUserOwner(currentUser, courseToUpdate))
+                throw new BadRequestException();
+
+            courseToUpdate.Name = updateCourseModel.Name;
+            courseToUpdate.Description = updateCourseModel.Description;
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task RemoveCourseAsync(Course course)
+        public async Task RemoveCourseAsync(int courseId)
         {
+            var course = await _dbContext.Courses.FirstOrDefaultAsync(x => x.Id == courseId);
+
+            if (course is null)
+                throw new NotFoundException($"Course with id {courseId} not found");
+
+            var currentUser = await _userService.GetCurrentUser();
+
+            if (!IsUserOwner(currentUser, course))
+                throw new BadRequestException();
+
             _dbContext.Courses.Remove(course);
             await _dbContext.SaveChangesAsync();
         }
 
-        public bool IsUserOwner(User user, Course course)
+        private bool IsUserOwner(UserModel user, Course course)
         {
             return user.Id == course.UserId;
         }

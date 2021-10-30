@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Entities.Models;
 using MentorCore.DTO.Account;
+using MentorCore.DTO.Users;
 
 namespace MentorCore.Services.Automapper
 {
@@ -10,6 +11,8 @@ namespace MentorCore.Services.Automapper
         {
             CreateMap<RegisterModel, User>()
                 .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
+
+            CreateMap<User, UserModel>();
         }
     }
 }
