@@ -27,6 +27,7 @@ namespace Api.Controllers
         /// <returns></returns>
         [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CourseModel))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetCourse(int id)
         {
             var course = await _courseService.GetCourseAsync(id);
@@ -71,6 +72,8 @@ namespace Api.Controllers
         [HttpPut("{id:int}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateCourse(int id, UpdateCourseModel updateCourseModel)
         {
             await _courseService.UpdateCourseAsync(id, updateCourseModel);
@@ -86,6 +89,8 @@ namespace Api.Controllers
         [HttpDelete("{id:int}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> RemoveCourse(int id)
         {
             await _courseService.RemoveCourseAsync(id);

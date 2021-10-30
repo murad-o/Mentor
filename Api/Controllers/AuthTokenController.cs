@@ -26,6 +26,7 @@ namespace Api.Controllers
         /// <returns></returns>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateRefreshToken(JwtTokenModel jwtTokenModel)
         {
             var jwtToken = await _jwtTokenService.UpdateJwtTokenAsync(jwtTokenModel);

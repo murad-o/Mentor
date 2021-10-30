@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Api.Controllers.Common;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Account;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -22,6 +23,8 @@ namespace Api.Controllers
         /// <param name="loginModel"></param>
         /// <returns></returns>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JwtTokenModel))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login(LoginModel loginModel)
         {
             var jwtTokenModel = await _accountService.SignInAsync(loginModel);

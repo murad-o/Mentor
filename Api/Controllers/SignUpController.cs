@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Api.Controllers.Common;
 using MentorCore.DTO.Account;
 using MentorCore.Interfaces.Account;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -22,6 +23,8 @@ namespace Api.Controllers
         /// <param name="registerModel"></param>
         /// <returns></returns>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> SignUp(RegisterModel registerModel)
         {
             await _accountService.SignUpAsync(registerModel);

@@ -24,6 +24,9 @@ namespace Api.Controllers
         /// <param name="emailModel"></param>
         /// <returns></returns>
         [HttpGet("email/confirmation")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> ConfirmEmail([FromQuery] EmailConfirmationModel emailModel)
         {
             await _accountService.ConfirmEmailAsync(emailModel);
