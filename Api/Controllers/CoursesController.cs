@@ -1,30 +1,22 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Abstractions.Courses;
 using Api.Controllers.Common;
-using AutoMapper;
-using Entities.Models;
-using MentorCore.DTO.Courses;
-using MentorCore.Interfaces.Account;
-using MentorCore.Interfaces.Courses;
+using Contracts.Courses;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Api.Controllers
 {
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class CoursesController : BaseController
     {
         private readonly ICourseService _courseService;
-        private readonly IMapper _mapper;
-        private readonly ICurrentUserService _currentUserService;
 
-        public CoursesController(ICourseService courseService, IMapper mapper,
-            ICurrentUserService currentUserService)
+        public CoursesController(ICourseService courseService)
         {
             _courseService = courseService;
-            _mapper = mapper;
-            _currentUserService = currentUserService;
         }
 
 
@@ -33,16 +25,13 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CourseModel>> GetCourse(int id)
+        [HttpGet("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CourseModel))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetCourse(int id)
         {
             var course = await _courseService.GetCourseAsync(id);
-
-            if (course is null)
-                return NotFound();
-
-            var courseResponse = _mapper.Map<CourseModel>(course);
-            return courseResponse;
+            return Ok(course);
         }
 
 
@@ -51,15 +40,11 @@ namespace Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CourseModel>>> GetCourses()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<CourseModel>))]
+        public async Task<ActionResult> GetCourses()
         {
             var courses = await _courseService.GetCoursesAsync();
-
-            if (!courses.Any())
-                return NotFound();
-
-            var coursesResponse = courses.Select(c => _mapper.Map<CourseModel>(c));
-            return Ok(coursesResponse);
+            return Ok(courses);
         }
 
 
@@ -70,19 +55,10 @@ namespace Api.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> CreateCourse(CreateCourseModel courseModel)
         {
-            var course = _mapper.Map<Course>(courseModel);
-
-            try
-            {
-                await _courseService.CreateCourseAsync(course);
-            }
-            catch (SecurityTokenException)
-            {
-                return BadRequest();
-            }
-
+            await _courseService.CreateCourseAsync(courseModel);
             return StatusCode(201);
         }
 
@@ -93,30 +69,15 @@ namespace Api.Controllers
         /// <param name="id"></param>
         /// <param name="updateCourseModel"></param>
         /// <returns></returns>
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateCourse(int id, UpdateCourseModel updateCourseModel)
         {
-            try
-            {
-                var courseToUpdate = await _courseService.GetCourseAsync(id);
-
-                if (courseToUpdate is null)
-                    return NotFound();
-
-                var currentUser = await _currentUserService.GetCurrentUser();
-
-                if (!_courseService.IsUserOwner(currentUser, courseToUpdate))
-                    return BadRequest();
-
-                await _courseService.UpdateCourseAsync(courseToUpdate, updateCourseModel);
-
-                return NoContent();
-            }
-            catch (SecurityTokenException)
-            {
-                return BadRequest();
-            }
+            await _courseService.UpdateCourseAsync(id, updateCourseModel);
+            return NoContent();
         }
 
 
@@ -125,29 +86,15 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> RemoveCourse(int id)
         {
-            try
-            {
-                var course = await _courseService.GetCourseAsync(id);
-
-                if (course is null)
-                    return NotFound();
-
-                var currentUser = await _currentUserService.GetCurrentUser();
-
-                if (!_courseService.IsUserOwner(currentUser, course))
-                    return BadRequest();
-
-                await _courseService.RemoveCourseAsync(course);
-                return NoContent();
-            }
-            catch (SecurityTokenException)
-            {
-                return BadRequest();
-            }
+            await _courseService.RemoveCourseAsync(id);
+            return NoContent();
         }
     }
 }

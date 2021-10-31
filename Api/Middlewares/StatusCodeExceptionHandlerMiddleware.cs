@@ -1,0 +1,51 @@
+﻿using System;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Domain.Exceptions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+
+namespace Api.Middlewares
+{
+    public class StatusCodeExceptionHandlerMiddleware : IMiddleware
+    {
+        private readonly ILogger<StatusCodeExceptionHandlerMiddleware> _logger;
+
+        public StatusCodeExceptionHandlerMiddleware(ILogger<StatusCodeExceptionHandlerMiddleware> logger)
+        {
+            _logger = logger;
+        }
+
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        {
+            try
+            {
+                await next(context);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                await HandleExceptionAsync(context, e);
+            }
+        }
+
+        private static async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
+        {
+            httpContext.Response.ContentType = "application/json";
+
+            httpContext.Response.StatusCode = exception switch
+            {
+                BadRequestException => StatusCodes.Status400BadRequest,
+                NotFoundException => StatusCodes.Status404NotFound,
+                _ => StatusCodes.Status500InternalServerError
+            };
+
+            var response = new
+            {
+                error = exception.Message
+            };
+
+            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(response));
+        }
+    }
+}

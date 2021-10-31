@@ -1,13 +1,13 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Contracts.Validators.Account;
 using FluentValidation.AspNetCore;
-using MentorCore.DTO.Validators.Account;
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Swagger;
 
 namespace Api.Extensions
 {
@@ -82,12 +82,12 @@ namespace Api.Extensions
                         Array.Empty<string>()
                     }
                 });
-                c.AddFluentValidationRules();
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+            services.AddFluentValidationRulesToSwagger();
         }
     }
 }

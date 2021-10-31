@@ -1,19 +1,20 @@
 ﻿using System.Threading.Tasks;
+using Abstractions.Account;
 using Api.Controllers.Common;
-using Entities.Models;
-using MentorCore.DTO.Account;
-using Microsoft.AspNetCore.Identity;
+using Contracts.Account;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class AccountController : BaseController
     {
-        private readonly UserManager<User> _userManager;
+        private readonly IAccountService _accountService;
 
-        public AccountController(UserManager<User> userManager)
+        public AccountController(IAccountService accountService)
         {
-            _userManager = userManager;
+            _accountService = accountService;
         }
 
 
@@ -23,23 +24,13 @@ namespace Api.Controllers
         /// <param name="emailModel"></param>
         /// <returns></returns>
         [HttpGet("email/confirmation")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> ConfirmEmail([FromQuery] EmailConfirmationModel emailModel)
         {
-            var user = await _userManager.FindByEmailAsync(emailModel.Email);
-
-            if (user is null)
-                return NotFound("User is not found");
-
-            var emailConfirmed = await _userManager.ConfirmEmailAsync(user, emailModel.Token);
-
-            if (emailConfirmed.Succeeded)
-                return Content("Your email confirmed successfully");
-
-            foreach (var error in emailConfirmed.Errors)
-            {
-                ModelState.TryAddModelError(error.Code, error.Description);
-            }
-            return BadRequest(ModelState);
+            await _accountService.ConfirmEmailAsync(emailModel);
+            return Ok();
         }
     }
 }

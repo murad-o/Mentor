@@ -1,11 +1,12 @@
 using Api.Extensions;
-using MentorCore.Extensions;
+using Api.Middlewares;
+using Services.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MentorCore.Services.Automapper;
+using Services.Services.Automapper;
 
 namespace Api
 {
@@ -40,7 +41,9 @@ namespace Api
 
             services.RegisterEmailSender();
             services.RegisterCourseService();
-            services.RegisterCurrentUserService();
+            services.RegisterAccountService();
+            services.RegisterUserService();
+            services.AddTransient<StatusCodeExceptionHandlerMiddleware>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -58,10 +61,12 @@ namespace Api
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseCors("CorsPolicy");
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors("CorsPolicy");
+
+            app.UseStatusCodeExceptionHandler();
 
             app.UseEndpoints(endpoints =>
             {
