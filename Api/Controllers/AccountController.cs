@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
+using Abstractions.Account;
 using Api.Controllers.Common;
-using MentorCore.DTO.Account;
-using MentorCore.Interfaces.Account;
+using Contracts.Account;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

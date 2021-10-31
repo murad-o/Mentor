@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Abstractions.Courses;
 using Api.Controllers.Common;
-using MentorCore.DTO.Courses;
-using MentorCore.Interfaces.Courses;
+using Contracts.Courses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
